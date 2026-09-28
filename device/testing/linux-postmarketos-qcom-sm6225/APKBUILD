@@ -1,0 +1,86 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+maintainer="Oscar Allegro <hsc100zz@gmail.com>"
+pkgname=linux-postmarketos-qcom-sm6225
+pkgver=7.2
+pkgrel=1
+pkgdesc="Mainline Kernel fork for SM6225 devices"
+arch="aarch64"
+_carch="arm64"
+_flavor="postmarketos-qcom-sm6225"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+        bison
+        clang
+        diffutils
+        elfutils-dev
+        findutils
+        flex
+        linux-headers
+        lld
+        llvm
+        openssl-dev
+        pahole
+        perl
+        postmarketos-installkernel
+        python3
+        zstd
+        "
+
+# Source
+_repository="linux-v7.2.1"
+_commit="8b6545f79b5ff3e589436c0746fc3014739dc12c"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://gitlab.postmarketos.org/sm6225-mainline/kernels/$_repository/-/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+
+
+prepare() {
+	default_prepare
+	cp -v "$srcdir/config-$_flavor.$CARCH" "$builddir"/.config
+}
+
+build() {
+	unset LDFLAGS
+	make ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" all Image.gz
+}
+
+package() {
+	mkdir -p "$pkgdir"/boot
+
+        make modules_install dtbs_install \
+                ARCH="$_carch" \
+                LLVM=1 \
+                INSTALL_PATH="$pkgdir"/boot \
+                INSTALL_MOD_PATH="$pkgdir"/usr \
+                INSTALL_MOD_STRIP=1 \
+                INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-tmp"
+
+        install -D "$builddir/arch/arm64/boot/vmlinuz.efi" \
+                "$pkgdir/boot/vmlinuz.efi"
+
+        install -D "$builddir/arch/arm64/boot/Image.gz" \
+                "$pkgdir/boot/vmlinuz"
+
+        # Reduce package size, install only qcom SM6225 dtbs.
+        # This reduces .apk size from ~46 Mb to ~30 Mb.
+        mkdir -p "$pkgdir"/boot/dtbs/qcom
+        cp -r "$pkgdir"/boot/dtbs-tmp/qcom/sm6225* "$pkgdir"/boot/dtbs/qcom
+        rm -r "$pkgdir"/boot/dtbs-tmp
+
+        # "build" is symlink that will be invalid in rootfs (points to /home/pmos...)
+        rm -f "$pkgdir"/usr/lib/modules/*/build "$pkgdir"/usr/lib/modules/*/source
+
+        install -D "$builddir/include/config/kernel.release" \
+                "$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+sha512sums="
+014293311b388ea6af3732dd01a240f4ab5e2e92be3cd7012f1d38cd7c7cb2740cf3afed2ce4d40494841ff05dd6226fbbf2d5fa61f602e83828bb0eedc94724  linux-postmarketos-qcom-sm6225-8b6545f79b5ff3e589436c0746fc3014739dc12c.tar.gz
+7a6092ba8dc3de5ee3925b40906508e6d86e00c3ffc9f0b46166a9c54c8050509f2414a3acf32db0a7c94e00d4dca1f17981db88e37525df2a754598b9424e38  config-postmarketos-qcom-sm6225.aarch64
+"
