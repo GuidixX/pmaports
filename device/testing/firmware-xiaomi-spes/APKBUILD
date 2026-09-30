@@ -11,7 +11,7 @@ options="!strip !check !archcheck !tracedeps textrels pmb:cross-native"
 _commit="817df49d5b4f4b9db629b0b04e5bf85c80ec20e3"
 
 source="
-	$pkgname.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
 	30-initramfs-firmware.files
 "
 builddir="$srcdir/$pkgname-$_commit"
