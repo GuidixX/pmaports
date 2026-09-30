@@ -1,0 +1,46 @@
+maintainer="Oscar Allegro <hsc100zz@gmail.com>"
+pkgname=firmware-xiaomi-spes
+pkgver=1
+pkgrel=0
+pkgdesc="Firmware for spes"
+url="https://gitlab.postmarketos.org/sm6225-mainline/firmwares/firmware-xiaomi-spes"
+arch="aarch64"
+license="proprietary"
+options="!strip !check !archcheck !tracedeps textrels pmb:cross-native"
+
+_commit="817df49d5b4f4b9db629b0b04e5bf85c80ec20e3"
+
+source="
+	$pkgname.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
+	30-initramfs-firmware.files
+"
+
+subpackages="$pkgname-sensors:firmware_sensors"
+builddir="$srcdir/$pkgname-$_commit"
+
+package() {
+	echo $builddir
+	_fw_path=$pkgdir/usr/lib/firmware
+
+	install -Dm644 lib/firmware/qcom/sm6225/XIAOMI/SPES/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPES/
+
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t "$pkgdir"/usr/share/mkinitfs/files
+
+	ln -s "$_fw_path"/qcom/sm6225/SPES/ "$_fw_path"/qcom/sm6225/SPESN/
+}
+
+#firmware_sensors() {
+#	pkgdesc="Files to be included to add sensor support"
+#	depends="$pkgname=$pkgver-r$pkgrel"
+#	mkdir "$subpkgdir"
+#
+#	while IFS="" read -r _i || [ -n "$_i" ]; do
+#		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
+#		install -Dm644 "$builddir/$_i" "$pkgdir/$_i"
+#	done < "$srcdir/sensor.files"
+#}
+
+sha512sums="
+1fe3e64c8b83ac5b3541ebdf8c97060fb1ac6a09b720717700723c0f6f9b36f5b43660c151aa7adb74ce45bca8aa78605748a5700e8c065de8d428e7492fe909  firmware-xiaomi-spes.tar.gz
+545cd6f8e9a3fc977711c7fa83d6bf901a3c042c48bfb06c56d43341eaab866cf0656031c37b78c0681193e3534091c0baae0ae16a1369a346fe0ba9cf3d7e93  30-initramfs-firmware.files
+"
