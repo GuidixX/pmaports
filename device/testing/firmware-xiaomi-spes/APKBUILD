@@ -14,8 +14,6 @@ source="
 	$pkgname.tar.gz::$url/archive/$_commit/$pkgname-$_commit.tar.gz
 	30-initramfs-firmware.files
 "
-
-subpackages="$pkgname-sensors:firmware_sensors"
 builddir="$srcdir/$pkgname-$_commit"
 
 package() {
