@@ -27,3 +27,6 @@ deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_fastboot_partition_dtbo="dtbo"
 deviceinfo_usb_idVendor="0x05с6"
 deviceinfo_usb_idProduct="0x9039"
+
+deviceinfo_drm="true"
+deviceinfo_super_partitions="/dev/disk/by-partlabel/super"
