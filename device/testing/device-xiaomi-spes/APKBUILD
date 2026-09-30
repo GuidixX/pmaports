@@ -9,6 +9,7 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	firmware-xiaomi-spes
 	linux-postmarketos-qcom-sm6225
 	make-dynpart-mappings
         mesa-vulkan-freedreno
