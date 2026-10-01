@@ -37,6 +37,7 @@ source="
 "
 builddir="$srcdir/$_repository-$_commit"
 
+_carch="arm64"
 
 prepare() {
 	default_prepare
@@ -44,9 +45,10 @@ prepare() {
 }
 
 build() {
-	unset LDFLAGS
-	make -j$(nproc --all) ARCH="$_carch" CC="${CC:-gcc}" \
-		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" all Image.gz
+        unset LDFLAGS
+
+        make ARCH="$_carch" LLVM=1 \
+                KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" all Image.gz
 }
 
 package() {
