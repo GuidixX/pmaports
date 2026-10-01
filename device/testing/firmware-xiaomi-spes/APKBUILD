@@ -20,7 +20,7 @@ package() {
 	echo $builddir
 	_fw_path=$pkgdir/usr/lib/firmware
 
-	install -Dm644 lib/firmware/qcom/sm6225/XIAOMI/SPES/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPES/
+	install -Dm644 qcom/sm6225/XIAOMI/SPES/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPES/
 
 	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t "$pkgdir"/usr/share/mkinitfs/files
 
