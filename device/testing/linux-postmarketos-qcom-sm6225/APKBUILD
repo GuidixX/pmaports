@@ -1,7 +1,7 @@
 maintainer="Oscar Allegro <hsc100zz@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
-pkgver=7.2
-pkgrel=1
+pkgver=7.2.1
+#pkgrel=
 pkgdesc="Mainline Kernel fork for SM6225 devices"
 arch="aarch64"
 _carch="arm64"
@@ -80,6 +80,6 @@ package() {
 }
 
 sha512sums="
-014293311b388ea6af3732dd01a240f4ab5e2e92be3cd7012f1d38cd7c7cb2740cf3afed2ce4d40494841ff05dd6226fbbf2d5fa61f602e83828bb0eedc94724  linux-v.7.2.1-8b6545f79b5ff3e589436c0746fc3014739dc12c.tar.gz
+014293311b388ea6af3732dd01a240f4ab5e2e92be3cd7012f1d38cd7c7cb2740cf3afed2ce4d40494841ff05dd6226fbbf2d5fa61f602e83828bb0eedc94724  linux-postmarketos-qcom-sm6225-8b6545f79b5ff3e589436c0746fc3014739dc12c.tar.gz
 7a6092ba8dc3de5ee3925b40906508e6d86e00c3ffc9f0b46166a9c54c8050509f2414a3acf32db0a7c94e00d4dca1f17981db88e37525df2a754598b9424e38  config-postmarketos-qcom-sm6225.aarch64
 "
