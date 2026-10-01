@@ -28,7 +28,7 @@ makedepends="
         "
 
 # Source
-_repository="linux-v7.2.1"
+_repository="linux-v.7.2.1"
 _commit="8b6545f79b5ff3e589436c0746fc3014739dc12c"
 _config="config-$_flavor.$arch"
 source="
