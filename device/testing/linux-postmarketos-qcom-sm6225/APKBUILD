@@ -62,9 +62,6 @@ package() {
                 INSTALL_MOD_STRIP=1 \
                 INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-tmp"
 
-        install -D "$builddir/arch/arm64/boot/vmlinuz.efi" \
-                "$pkgdir/boot/vmlinuz.efi"
-
         install -D "$builddir/arch/arm64/boot/Image.gz" \
                 "$pkgdir/boot/vmlinuz"
 
