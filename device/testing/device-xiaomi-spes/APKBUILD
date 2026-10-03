@@ -50,7 +50,7 @@ kernel_spes_sm5602() {
 kernel_spes_max77729() {
 	pkgdesc="Xiaomi Redmi Note 11 (spes) with Maxim MAX77729 PMIC"
 	echo "WARNING: There is currently no support for $pkgdesc."
-	exit 1
+	exit 0
 }
 
 kernel_spesn() {
