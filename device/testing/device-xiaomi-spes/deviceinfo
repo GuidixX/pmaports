@@ -7,6 +7,7 @@ deviceinfo_name="Xiaomi Redmi Note 11"
 deviceinfo_manufacturer="Xiaomi"
 deviceinfo_codename="xiaomi-spes"
 deviceinfo_year="2021"
+deviceinfo_dtb_spesn="qcom/sm6225-xiaomi-spesn"
 deviceinfo_arch="aarch64"
 
 # Device related
