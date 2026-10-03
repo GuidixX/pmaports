@@ -11,7 +11,8 @@ options="!strip !check !archcheck !tracedeps textrels pmb:cross-native"
 _commit="12066b526064691a3da463f07755f6c64973f2dd"
 
 depends="
-	firmware-qcom-sm7150-ath10k
+	linux-firmware-ath10k
+	linux-firmware-qca
 	firmware-qcom-adreno-a630
 "
 source="
