@@ -28,6 +28,11 @@ source="
 	deviceinfo
 	kernel-cmdline.conf
 "
+subpackages="
+	$pkgname-kernel-spes-sm5602:kernel_spes_sm5602
+	$pkgname-kernel-spes-max77729:kernel_spes_max77729
+	$pkgname-kernel-spesn:kernel_spesn
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -37,7 +42,23 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
+kernel_spes_sm5602() {
+	pkgdesc="Xiaomi Redmi Note 11 (spes) with SM5602 PMIC"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
+kernel_spes_max77729() {
+	pkgdesc="Xiaomi Redmi Note 11 (spes) with Maxim MAX77729 PMIC"
+	echo "WARNING: There is currently no support for $pkgdesc."
+	exit 1
+}
+
+kernel_spesn() {
+	pkgdesc="Xiaomi Redmi Note 11 NFC (spesn)"
+	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
+}
+
 sha512sums="
-ce461013c331f0f2f89dda99556d5cde36ed0960d6e6c3504095d932102828d7684d448b4b77e6b21137342de579c376c1e2badf5f7337db99a443a3ff407123  deviceinfo
-a230e30a05453491d41ba4a6a4c504e3dbe7b630402ac2b837aa5d977c2d38c73c93fb198e8aff892a12005de8d2355593fe2fae8e3e9412418efb1d32250022  kernel-cmdline.conf
+b8ac73fae9efe42fbfc57e15c6f777c03fea7792356d52ab2ad06e0569f613f47e2afd42959bc4d6d226e7515c042699ae124f140423a7b3d9155ff793165c99  deviceinfo
+8a8799732ef3971cb70dfdcb5da5f500151789b1682fe07bf1e1552ea48e4b77ae4e2d0b7d339892a451eb4988ac50bc57f16502478ab1cd2a9c1b873c676ca3  kernel-cmdline.conf
 "
