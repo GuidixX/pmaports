@@ -8,8 +8,12 @@ arch="aarch64"
 license="proprietary"
 options="!strip !check !archcheck !tracedeps textrels pmb:cross-native"
 
-_commit="817df49d5b4f4b9db629b0b04e5bf85c80ec20e3"
+_commit="12066b526064691a3da463f07755f6c64973f2dd"
 
+depends="
+	firmware-qcom-sm7150-ath10k
+	firmware-qcom-adreno-a630
+"
 source="
 	$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
 	30-initramfs-firmware.files
@@ -39,6 +43,6 @@ package() {
 #}
 
 sha512sums="
-1fe3e64c8b83ac5b3541ebdf8c97060fb1ac6a09b720717700723c0f6f9b36f5b43660c151aa7adb74ce45bca8aa78605748a5700e8c065de8d428e7492fe909  firmware-xiaomi-spes.tar.gz
-cfbf57b13da3a89b38a88b065e3922f7506f05e50f76a42b16ed1439be4dd4afc4297dac0cf90c937d1f3158d6cc90492f6590fd3631fa4aaaea2d5c264b6a8d  30-initramfs-firmware.files
+acae52536fcbd4cae3f9f444e10d3dc65323e5b264dbd1734b57ad8784d1d8a745a3cf0bbfc86f70b9e3ba351715c6665a01ec37a2bb40846fbab6b1d9a9c9e4  firmware-xiaomi-spes.tar.gz
+2f82b595f53abc92fe701fe4f96a39981b7bcb199abeed1e781d339bf1eeb5b26c4b0d398413c6e9d83a45e3b357a8c4b6393cd3ac2d4c92389029ea128cdf77  30-initramfs-firmware.files
 "

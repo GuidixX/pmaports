@@ -1,4 +1,3 @@
-/lib/firmware/qcom/sm6225/XIAOMI/SPES/rtic.mbn
 /lib/firmware/qcom/sm6225/XIAOMI/SPES/modem.b11
 /lib/firmware/qcom/sm6225/XIAOMI/SPES/modem.b26
 /lib/firmware/qcom/sm6225/XIAOMI/SPES/modem.b22
@@ -93,3 +92,7 @@
 /lib/firmware/qcom/sm6225/XIAOMI/SPESN/modem.mdt
 /lib/firmware/qcom/sm6225/XIAOMI/SPESN/a610_zap.b00
 /lib/firmware/qcom/sm6225/XIAOMI/SPESN/a610_zap.b02
+/lib/firmware/ath10k/WCN3990/hw1.0/board-2.bin.zst
+/lib/firmware/ath10k/WCN3990/hw1.0/firmware-5.bin.zst
+/lib/firmware/qcom/a630_gmu.bin
+/lib/firmware/qcom/a630_sqe.fw
