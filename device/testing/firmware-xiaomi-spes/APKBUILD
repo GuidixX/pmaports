@@ -26,10 +26,9 @@ package() {
 	_fw_path=$pkgdir/usr/lib/firmware
 
 	install -Dm644 qcom/sm6225/XIAOMI/SPES/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPES/
+	install -Dm644 qcom/sm6225/XIAOMI/SPESN/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPESN/
 
 	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t "$pkgdir"/usr/share/mkinitfs/files
-
-	ln -s "$_fw_path"/qcom/sm6225/SPES/ "$_fw_path"/qcom/sm6225/SPESN
 }
 
 #firmware_sensors() {
