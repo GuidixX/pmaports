@@ -9,6 +9,9 @@ license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
+	android-tools
+	android-tools-mkbootimg
+	android-tools-mkdtboimg
 	firmware-xiaomi-spes
 	linux-postmarketos-qcom-sm6225
 	make-dynpart-mappings
