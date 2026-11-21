@@ -1,48 +1,33 @@
-maintainer="Oscar Allegro <hsc100zz@gmail.com>"
+maintainer="Guidix <guidixm@gmail.com>"
 pkgname=firmware-xiaomi-spes
 pkgver=1
-pkgrel=0
-pkgdesc="Firmware for spes"
-url="https://gitlab.postmarketos.org/sm6225-mainline/firmwares/firmware-xiaomi-spes"
+pkgrel=1
+pkgdesc="Firmware for Xiaomi spes and spesn"
+url="https://github.com/GuidixX/firmware-xiaomi-spes"
 arch="aarch64"
 license="proprietary"
 options="!strip !check !archcheck !tracedeps textrels pmb:cross-native"
+depends="linux-firmware-ath10k linux-firmware-qca firmware-qcom-adreno-a630"
+source="30-initramfs-firmware.files"
+builddir="$srcdir/firmware"
 
-_commit="12066b526064691a3da463f07755f6c64973f2dd"
-
-depends="
-	linux-firmware-ath10k
-	linux-firmware-qca
-	firmware-qcom-adreno-a630
-"
-source="
-	$pkgname.tar.gz::$url/-/archive/$_commit/$pkgname-$_commit.tar.gz
-	30-initramfs-firmware.files
-"
-builddir="$srcdir/$pkgname-$_commit"
-
-package() {
-	echo $builddir
-	_fw_path=$pkgdir/usr/lib/firmware
-
-	install -Dm644 qcom/sm6225/XIAOMI/SPES/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPES/
-	install -Dm644 qcom/sm6225/XIAOMI/SPESN/* -t "$_fw_path"/qcom/sm6225/XIAOMI/SPESN/
-
-	install -Dm644 "$srcdir/30-initramfs-firmware.files" -t "$pkgdir"/usr/share/mkinitfs/files
+prepare() {
+	[ -d "$builddir/qcom/sm6225/XIAOMI/SPESN" ] || {
+		echo "Use nura/build.sh to build this package with the local firmware source." >&2
+		return 1
+	}
 }
 
-#firmware_sensors() {
-#	pkgdesc="Files to be included to add sensor support"
-#	depends="$pkgname=$pkgver-r$pkgrel"
-#	mkdir "$subpkgdir"
-#
-#	while IFS="" read -r _i || [ -n "$_i" ]; do
-#		[ ! -d $(dirname $_i) ] && mkdir -p $(dirname $_i)
-#		install -Dm644 "$builddir/$_i" "$pkgdir/$_i"
-#	done < "$srcdir/sensor.files"
-#}
+package() {
+	for _variant in SPES SPESN; do
+		install -Dm644 qcom/sm6225/XIAOMI/$_variant/* \
+			-t "$pkgdir/usr/lib/firmware/qcom/sm6225/XIAOMI/$_variant/"
+	done
+	install -Dm644 "$srcdir/30-initramfs-firmware.files" \
+		"$pkgdir/usr/share/mkinitfs/files/30-initramfs-firmware.files"
+}
 
+# prepare.py adds the checksum of the verified firmware list.
 sha512sums="
-acae52536fcbd4cae3f9f444e10d3dc65323e5b264dbd1734b57ad8784d1d8a745a3cf0bbfc86f70b9e3ba351715c6665a01ec37a2bb40846fbab6b1d9a9c9e4  firmware-xiaomi-spes.tar.gz
-2f82b595f53abc92fe701fe4f96a39981b7bcb199abeed1e781d339bf1eeb5b26c4b0d398413c6e9d83a45e3b357a8c4b6393cd3ac2d4c92389029ea128cdf77  30-initramfs-firmware.files
+54c65480606a0642117e948fd132c525d1a6d9d046ce59ccc03aa0e8b3ed01a6ca67691aa6a288fa76f75fe50a08dd0646dc7c71916be3839cc9d1e5a193d4bb  30-initramfs-firmware.files
 "
