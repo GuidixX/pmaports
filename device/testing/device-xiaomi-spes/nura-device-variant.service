@@ -1,0 +1,14 @@
+[Unit]
+Description=Identify Xiaomi spes/spesn from the active Device Tree
+DefaultDependencies=no
+After=systemd-remount-fs.service
+Before=sysinit.target
+ConditionPathExists=/sys/firmware/devicetree/base/qcom,board-id
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/nura-device-variant
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

@@ -1,0 +1,79 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Audit the DTB already selected before Linux started. Never replace a live DTB
+# or instantiate devices by probing I2C/SPI addresses from userspace.
+set -efu
+
+dt_root=${NURA_DT_ROOT:-/sys/firmware/devicetree/base}
+runtime_dir=${NURA_RUNTIME_DIR:-/run/nura}
+bootconfig=${NURA_BOOTCONFIG:-/proc/bootconfig}
+cmdline=${NURA_CMDLINE:-/proc/cmdline}
+writing=false
+[ $# -ne 0 ] || writing=true
+
+fail() {
+	if [ "$writing" = true ]; then
+		rm -f "$runtime_dir/device-variant.env"
+	fi
+	printf 'nura-device-variant: %s\n' "$*" >&2
+	exit 1
+}
+
+[ $# -eq 0 ] || [ "$#:$1" = "1:--print" ] || fail "usage: $0 [--print]"
+[ -r "$dt_root/compatible" ] || fail "active Device Tree is unavailable"
+compatibles=$(tr '\000' ':' < "$dt_root/compatible")
+case ":$compatibles" in
+	*:qcom,sm6225:*) ;;
+	*) fail "active Device Tree is not for SM6225" ;;
+esac
+
+[ -r "$dt_root/qcom,board-id" ] || fail "active Device Tree has no qcom,board-id"
+# DT cells are big-endian; reading bytes avoids depending on host endianness.
+board_id=$(od -An -v -tx1 "$dt_root/qcom,board-id" | tr -d ' \n')
+case "$board_id" in
+	0004002200000000)
+		variant=spes
+		dtb=qcom/sm6225-xiaomi-spes-sm5602
+		board=0x40022
+		;;
+	0003002200000000)
+		variant=spesn
+		dtb=qcom/sm6225-xiaomi-spesn
+		board=0x30022
+		;;
+	*) fail "unsupported qcom,board-id: $board_id; refusing to guess a variant" ;;
+esac
+
+# Compare an independent bootloader device name when it is supplied. Most
+# androidboot fields identify the SoC/region, so only explicit codenames count.
+hints=""
+if [ -r "$bootconfig" ]; then
+	hints=$(sed -n 's/^[[:space:]]*androidboot\.\(product\.device\|device\)[[:space:]]*=[[:space:]]*"\{0,1\}\(spesn\{0,1\}\)"\{0,1\}[[:space:]]*$/\2/p' "$bootconfig")
+fi
+if [ -r "$cmdline" ]; then
+	for word in $(cat "$cmdline"); do
+		case "$word" in
+			androidboot.product.device=spes|androidboot.product.device=spesn|androidboot.device=spes|androidboot.device=spesn)
+				hints="$hints ${word#*=}"
+				;;
+		esac
+	done
+fi
+for hint in $hints; do
+	[ "$hint" = "$variant" ] || fail "bootloader reports $hint but active DTB is $variant"
+done
+
+output="NURA_VARIANT=$variant
+NURA_BOARD_ID=$board
+NURA_DTB=$dtb"
+if [ $# -eq 1 ]; then
+	printf '%s\n' "$output"
+else
+	mkdir -p "$runtime_dir"
+	umask 022
+	temporary="$runtime_dir/device-variant.env.$$"
+	trap 'rm -f "$temporary"' EXIT HUP INT TERM
+	printf '%s\n' "$output" > "$temporary"
+	mv "$temporary" "$runtime_dir/device-variant.env"
+	printf 'nura-device-variant: %s, active DTB %s\n' "$variant" "$dtb"
+fi
