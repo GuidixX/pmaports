@@ -1,84 +1,51 @@
-maintainer="Oscar Allegro <hsc100zz@gmail.com>"
+maintainer="Guidix <guidixm@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
-pkgver=7.2.1
-pkgrel=0
-pkgdesc="Mainline Kernel fork for SM6225 devices"
+pkgver=7.4.0_rc3
+pkgrel=1
+pkgdesc="Nura mainline kernel for Xiaomi spes and spesn"
 arch="aarch64"
-_carch="arm64"
-_flavor="postmarketos-qcom-sm6225"
-url="https://kernel.org"
+url="https://github.com/GuidixX/kernel_xiaomi_sm6225-mainline"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="
-        bison
-        clang
-        diffutils
-        elfutils-dev
-        findutils
-        flex
-        linux-headers
-        lld
-        llvm
-        openssl-dev
-        pahole
-        perl
-        postmarketos-installkernel
-        python3
-        zstd
-        "
-
-# Source
-_repository="linux-v.7.2.1"
-_commit="f5a976a8334c7563137352eaafe8d49a2a3b8c6a"
-_config="config-$_flavor.$arch"
-source="
-	$pkgname-$_commit.tar.gz::https://gitlab.postmarketos.org/sm6225-mainline/kernels/$_repository/-/archive/$_commit.tar.gz
-	$_config
-"
-builddir="$srcdir/$_repository-$_commit"
-
+makedepends="bison clang diffutils elfutils-dev findutils flex linux-headers lld llvm openssl-dev pahole perl postmarketos-installkernel python3 zstd"
 _carch="arm64"
+_flavor="postmarketos-qcom-sm6225"
+_config="config-$_flavor.$arch"
+source="$_config"
+builddir="$srcdir/linux"
 
 prepare() {
+	[ -f "$builddir/Makefile" ] || {
+		echo "Use nura/build.sh to build this package with the local kernel source." >&2
+		return 1
+	}
 	default_prepare
-	cp -v "$srcdir/config-$_flavor.$CARCH" "$builddir"/.config
+	cp "$srcdir/$_config" "$builddir/.config"
+	make ARCH="$_carch" LLVM=1 olddefconfig
 }
 
 build() {
-        unset LDFLAGS
-
-        make ARCH="$_carch" LLVM=1 \
-                KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-$_flavor" all Image.gz
+	unset LDFLAGS
+	make ARCH="$_carch" LLVM=1 \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor" \
+		Image.gz modules \
+		qcom/sm6225-xiaomi-spes-sm5602.dtb qcom/sm6225-xiaomi-spesn.dtb
 }
 
 package() {
-	mkdir -p "$pkgdir"/boot
-
-        make modules_install dtbs_install \
-                ARCH="$_carch" \
-                LLVM=1 \
-                INSTALL_PATH="$pkgdir"/boot \
-                INSTALL_MOD_PATH="$pkgdir"/usr \
-                INSTALL_MOD_STRIP=1 \
-                INSTALL_DTBS_PATH="$pkgdir/boot/dtbs-tmp"
-
-        install -D "$builddir/arch/arm64/boot/Image.gz" \
-                "$pkgdir/boot/vmlinuz"
-
-        # Reduce package size, install only qcom SM6225 dtbs.
-        # This reduces .apk size from ~46 Mb to ~30 Mb.
-        mkdir -p "$pkgdir"/boot/dtbs/qcom
-        cp -r "$pkgdir"/boot/dtbs-tmp/qcom/sm6225* "$pkgdir"/boot/dtbs/qcom
-        rm -r "$pkgdir"/boot/dtbs-tmp
-
-        # "build" is symlink that will be invalid in rootfs (points to /home/pmos...)
-        rm -f "$pkgdir"/usr/lib/modules/*/build "$pkgdir"/usr/lib/modules/*/source
-
-        install -D "$builddir/include/config/kernel.release" \
-                "$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	make ARCH="$_carch" LLVM=1 modules_install \
+		INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1
+	install -Dm644 arch/arm64/boot/Image.gz "$pkgdir/boot/vmlinuz"
+	for _dtb in sm6225-xiaomi-spes-sm5602 sm6225-xiaomi-spesn; do
+		install -Dm644 "arch/arm64/boot/dts/qcom/$_dtb.dtb" \
+			"$pkgdir/boot/dtbs/qcom/$_dtb.dtb"
+	done
+	rm -f "$pkgdir"/usr/lib/modules/*/build "$pkgdir"/usr/lib/modules/*/source
+	install -Dm644 include/config/kernel.release \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
 }
 
+# prepare.py adds the checksum of the generated, full .config.
 sha512sums="
-f8b9677542b1d477401d0cb2c2f3586898fc8490ca084b113172cb44d2a78b9e67192b6b1d92033ad939fcf0c260fb23de011f6aea9684e4e3d95c313f700d1a  linux-postmarketos-qcom-sm6225-f5a976a8334c7563137352eaafe8d49a2a3b8c6a.tar.gz
-cf8774e8445177beb47a4d02922879541d5b31630b3cbf438bfd8a3287920e88ddff4e83e9f438b1fe3c94c821b500a2c59871dd7e0e92bb647b720d59eeff82  config-postmarketos-qcom-sm6225.aarch64
+6cdd345e78d2121ea078e379a18497cac653ee9d9f93f1faa39813276fd3a51a75fa4528180f42a897da00511092e168d129813f8222693aabe7723411fbee02  config-postmarketos-qcom-sm6225.aarch64
 "
