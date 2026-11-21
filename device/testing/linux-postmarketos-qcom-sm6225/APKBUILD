@@ -1,13 +1,13 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
 pkgver=7.4.0_rc3
-pkgrel=1
+pkgrel=2
 pkgdesc="Nura mainline kernel for Xiaomi spes and spesn"
 arch="aarch64"
 url="https://github.com/GuidixX/kernel_xiaomi_sm6225-mainline"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
-makedepends="bison clang diffutils elfutils-dev findutils flex linux-headers lld llvm openssl-dev pahole perl postmarketos-installkernel python3 zstd"
+makedepends="bc bison clang diffutils elfutils-dev findutils flex linux-headers lld llvm openssl-dev pahole perl postmarketos-installkernel python3 zstd"
 _carch="arm64"
 _flavor="postmarketos-qcom-sm6225"
 _config="config-$_flavor.$arch"
