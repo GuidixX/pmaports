@@ -1,22 +1,21 @@
 # Reference: <https://postmarketos.org/devicepkg>
-maintainer="Oscar Allegro <hsc100zz@gmail.com>"
+maintainer="Guidix <guidixm@gmail.com>"
 pkgname=device-xiaomi-spes
 pkgdesc="Xiaomi Redmi Note 11"
 pkgver=4
-pkgrel=0
+pkgrel=1
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
 options="!check !archcheck"
 depends="
-	android-tools
+	android-tools-fastboot
 	android-tools-mkbootimg
 	android-tools-mkdtboimg
 	firmware-xiaomi-spes
 	linux-postmarketos-qcom-sm6225
 	make-dynpart-mappings
         mesa-vulkan-freedreno
-	mkbootimg
 	msm-modem
         postmarketos-base
         qbootctl
@@ -28,11 +27,6 @@ source="
 	deviceinfo
 	kernel-cmdline.conf
 "
-subpackages="
-	$pkgname-kernel-spes-sm5602:kernel_spes_sm5602
-	$pkgname-kernel-spes-max77729:kernel_spes_max77729
-	$pkgname-kernel-spesn:kernel_spesn
-"
 
 build() {
 	devicepkg_build $startdir $pkgname
@@ -42,23 +36,8 @@ package() {
 	devicepkg_package $startdir $pkgname
 }
 
-kernel_spes_sm5602() {
-	pkgdesc="Xiaomi Redmi Note 11 (spes) with SM5602 PMIC"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_spes_max77729() {
-	pkgdesc="Xiaomi Redmi Note 11 (spes) with Maxim MAX77729 PMIC"
-	echo "WARNING: There is currently no support for $pkgdesc."
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
-
-kernel_spesn() {
-	pkgdesc="Xiaomi Redmi Note 11 NFC (spesn)"
-	devicepkg_subpackage_kernel $startdir $pkgname $subpkgname
-}
 
 sha512sums="
-b8ac73fae9efe42fbfc57e15c6f777c03fea7792356d52ab2ad06e0569f613f47e2afd42959bc4d6d226e7515c042699ae124f140423a7b3d9155ff793165c99  deviceinfo
+002a4ef1ccb8e1a7c79564240333c92863ccd9e8993ce8b2d5d6476e29f96df3bb1852be9154978891a5fc18f5a549e0bc040b76d8b6beb61d193bf2073a05e4  deviceinfo
 8a8799732ef3971cb70dfdcb5da5f500151789b1682fe07bf1e1552ea48e4b77ae4e2d0b7d339892a451eb4988ac50bc57f16502478ab1cd2a9c1b873c676ca3  kernel-cmdline.conf
 "

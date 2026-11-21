@@ -3,12 +3,10 @@
 # scripts.
 
 deviceinfo_format_version="0"
-deviceinfo_name="Xiaomi Redmi Note 11"
+deviceinfo_name="Xiaomi Redmi Note 11 / NFC (spes/spesn)"
 deviceinfo_manufacturer="Xiaomi"
 deviceinfo_codename="xiaomi-spes"
 deviceinfo_year="2021"
-deviceinfo_dtb_spes="qcom/sm6225-xiaomi-spes"
-deviceinfo_dtb_spesn="qcom/sm6225-xiaomi-spesn"
 deviceinfo_arch="aarch64"
 
 # Device related
@@ -27,8 +25,11 @@ deviceinfo_flash_offset_ramdisk="0x01000000"
 deviceinfo_flash_offset_second="0x00008000"
 deviceinfo_flash_offset_tags="0x00000100"
 deviceinfo_flash_fastboot_partition_dtbo="dtbo"
-deviceinfo_usb_idVendor="0x05с6"
+deviceinfo_usb_idVendor="0x05c6"
 deviceinfo_usb_idProduct="0x9039"
 
 deviceinfo_drm="true"
 deviceinfo_super_partitions="/dev/disk/by-partlabel/super"
+
+# The bootloader selects the DTB by qcom,board-id.
+deviceinfo_dtb="qcom/sm6225-xiaomi-spes-sm5602 qcom/sm6225-xiaomi-spesn"
