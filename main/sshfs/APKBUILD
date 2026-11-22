@@ -1,0 +1,28 @@
+# Repackage Alpine's SSHFS with mount helpers compatible with bin-merge.
+maintainer="Guidix <guidixm@gmail.com>"
+pkgname=sshfs
+pkgver=3.7.7
+pkgrel=1
+pkgdesc="FUSE client based on the SSH File Transfer Protocol"
+url="https://github.com/libfuse/sshfs"
+arch="aarch64"
+license="GPL-2.0-or-later"
+options="!strip !check" # Packaging the already built Alpine executable.
+depends="openssh-client fuse3"
+makedepends="python3"
+_upstream_apk="$pkgname-$pkgver-r0.apk"
+source="
+	$_upstream_apk::http://cdn.alpinelinux.org/edge/main/$arch/$_upstream_apk
+	install-merged.py
+"
+noextract="$_upstream_apk"
+builddir="$srcdir"
+
+package() {
+	python3 "$srcdir/install-merged.py" "$srcdir/$_upstream_apk" "$pkgdir"
+}
+
+sha512sums="
+12c207bfb3cf57b2590acc2aa0c719607c846bd38bcbed8d106083a377cd0e6915324858bb6cd735f2efb991277b7cc0a2437c2488e4b594d0bd3748a8bdf2d5  sshfs-3.7.7-r0.apk
+e807f4c665cbf90c131736ab3b0cc7d628dd090f4214f584d2192a4cb63a6e6ce92d67b955bd40e98aef070b68616eabe3dc255ffb917cf0ec67be4ad2a7ce90  install-merged.py
+"
