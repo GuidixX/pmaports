@@ -1,0 +1,14 @@
+--- a/boot-deploy-functions.sh
++++ b/boot-deploy-functions.sh
+@@ -880,6 +880,11 @@
+ 
+ 		# shellcheck disable=SC2039 disable=SC2086
+ 		mkbootimg \
++			--base "${_base}" \
++			--kernel_offset "${deviceinfo_flash_offset_kernel:-0x00008000}" \
++			--ramdisk_offset "${deviceinfo_flash_offset_ramdisk:-0x01000000}" \
++			--tags_offset "${deviceinfo_flash_offset_tags:-0x00000100}" \
++			--dtb_offset "${deviceinfo_flash_offset_dtb:-0x01f00000}" \
+ 			--header_version "${deviceinfo_header_version}" \
+ 			--dtb "${_dtb}" \
+ 			--kernel "${_kernelfile}" \
