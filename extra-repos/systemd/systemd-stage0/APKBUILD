@@ -5,7 +5,7 @@ pkgname=systemd-stage0
 pkgver=262.2
 _pkgver="${pkgver/_/-}"
 # pkgrel must match systemd!
-pkgrel=2
+pkgrel=4
 pkgdesc="Minimal systemd bootstrap package"
 url="https://github.com/systemd/systemd"
 # armhf: pmb#2618
@@ -49,7 +49,15 @@ source="systemd-$pkgver.tar.gz::https://github.com/systemd/systemd/archive/refs/
 builddir="$srcdir/systemd-$_pkgver"
 
 build() {
+	# PKG_CONFIG_PATH alone still permits fallback to native .pc files.
+	# Resolve target libraries exclusively from the cross-build sysroot.
+	if [ "$CBUILD" != "$CHOST" ]; then
+		export PKG_CONFIG_LIBDIR="$CBUILDROOT/usr/lib/pkgconfig:$CBUILDROOT/usr/share/pkgconfig"
+		export PKG_CONFIG_PATH="$PKG_CONFIG_LIBDIR"
+	fi
+
 	abuild-meson \
+		--auto-features=disabled \
 		-Dtests=false \
 		-Ddbuspolicydir=/usr/share/dbus-1/system.d \
 		-Ddbussessionservicedir=/usr/share/dbus-1/services \
