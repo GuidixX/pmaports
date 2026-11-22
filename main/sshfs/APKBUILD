@@ -2,14 +2,16 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=sshfs
 pkgver=3.7.7
-pkgrel=1
+pkgrel=2
 pkgdesc="FUSE client based on the SSH File Transfer Protocol"
 url="https://github.com/libfuse/sshfs"
 arch="aarch64"
 license="GPL-2.0-or-later"
 options="!strip !check" # Packaging the already built Alpine executable.
 depends="openssh-client fuse3"
-makedepends="python3"
+makedepends_build="python3"
+# abuild must be able to resolve the packaged executable's target SONAMEs.
+makedepends_host="fuse3-libs glib"
 _upstream_apk="$pkgname-$pkgver-r0.apk"
 source="
 	$_upstream_apk::http://cdn.alpinelinux.org/edge/main/$arch/$_upstream_apk
