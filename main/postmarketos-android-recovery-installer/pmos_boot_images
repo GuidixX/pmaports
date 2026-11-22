@@ -1,0 +1,114 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Android boot/vendor_boot handling shared by the recovery scripts.
+
+boot_slot_suffix() {
+	local slot="${BOOT_SLOT_SUFFIX:-}"
+	if [ -z "$slot" ] && command -v getprop >/dev/null 2>&1; then
+		slot=$(getprop ro.boot.slot_suffix)
+		[ -n "$slot" ] || slot=$(getprop ro.boot.slot)
+	fi
+	if [ -z "$slot" ]; then
+		slot=$(sed -n 's/.*androidboot\.slot_suffix=\([^ ]*\).*/\1/p' /proc/cmdline)
+		[ -n "$slot" ] || slot=$(sed -n 's/.*androidboot\.slot=\([^ ]*\).*/\1/p' /proc/cmdline)
+	fi
+	if [ -z "$slot" ] && [ -r /proc/bootconfig ]; then
+		slot=$(sed -n 's/^[[:space:]]*androidboot\.slot_suffix[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' /proc/bootconfig)
+	fi
+	case "$slot" in
+		_a|a) printf '%s\n' _a ;;
+		_b|b) printf '%s\n' _b ;;
+		"") return 0 ;;
+		*) echo "Invalid boot slot: $slot" >&2; return 1 ;;
+	esac
+}
+
+resolve_boot_partition() {
+	local label="$1" suffix="$2" dev="" fstab_dev=""
+	dev=$(findfs PARTLABEL="$label$suffix" 2>/dev/null) || dev=""
+	if [ -z "$dev" ]; then
+		fstab_dev=$(get_fstab_device "$fstab_recovery" "$label")
+		case "$fstab_dev" in
+			*/"$label") fstab_dev="$fstab_dev$suffix" ;;
+			*/"$label"_a|*/"$label"_b)
+				[ "${fstab_dev##*/}" = "$label$suffix" ] || return 1 ;;
+			*) [ -z "$suffix" ] || return 1 ;;
+		esac
+		[ -n "$fstab_dev" ] && [ -e "$fstab_dev" ] || return 1
+		dev="$fstab_dev"
+	fi
+	readlink -f "$dev"
+}
+
+check_boot_capacity() {
+	local device="$1" size="$2" capacity=""
+	case "$size" in ""|*[!0-9]*) echo "Invalid image size" >&2; return 1 ;; esac
+	[ "$size" -gt 0 ] || return 1
+	capacity=$(blockdev --getsize64 "$device") || return 1
+	case "$capacity" in ""|*[!0-9]*) return 1 ;; esac
+	[ "$capacity" -ge "$size" ] || {
+		echo "Image exceeds partition capacity: $device" >&2
+		return 1
+	}
+}
+
+prepare_android_boot_targets() {
+	[ "$FLASH_KERNEL" = true ] && [ "$ISOREC" != true ] || return 0
+	[ "${BOOT_INSTALL_SCHEMA:-}" = 1 ] || { echo "Missing boot image metadata" >&2; return 1; }
+	case "${BOOT_HEADER_VERSION:-}" in
+		3|4) [ "${VENDOR_BOOT_REQUIRED:-}" = true ] || return 1 ;;
+		0|1|2) [ "${VENDOR_BOOT_REQUIRED:-}" = false ] || return 1 ;;
+		*) echo "Invalid boot header metadata" >&2; return 1 ;;
+	esac
+	local suffix=""
+	suffix=$(boot_slot_suffix) || return 1
+	export BOOT_SLOT_SUFFIX="$suffix"
+	BOOT_PARTITION=$(resolve_boot_partition "${KERNEL_PARTLABEL:-boot}" "$suffix") || {
+		echo "Cannot resolve boot partition for slot '$suffix'" >&2
+		return 1
+	}
+	export BOOT_PARTITION
+	[ "$BOOT_PARTITION" != "$INSTALL_DEVICE" ] || return 1
+	check_boot_capacity "$BOOT_PARTITION" "$BOOT_IMAGE_SIZE" || return 1
+	case "${VENDOR_BOOT_REQUIRED:-}" in
+		true)
+			VENDOR_BOOT_PARTITION=$(resolve_boot_partition "${VENDOR_BOOT_PARTLABEL:-vendor_boot}" "$suffix") || {
+				echo "Cannot resolve vendor_boot partition for slot '$suffix'" >&2
+				return 1
+			}
+			export VENDOR_BOOT_PARTITION
+			[ "$VENDOR_BOOT_PARTITION" != "$BOOT_PARTITION" ] || return 1
+			[ "$VENDOR_BOOT_PARTITION" != "$INSTALL_DEVICE" ] || return 1
+			check_boot_capacity "$VENDOR_BOOT_PARTITION" "$VENDOR_BOOT_IMAGE_SIZE" || return 1
+			;;
+		false) ;;
+		*) echo "Invalid vendor_boot metadata" >&2; return 1 ;;
+	esac
+}
+
+verify_boot_image() {
+	local file="$1" expected_size="$2" expected_hash="$3" actual_hash=""
+	[ -f "$file" ] || return 1
+	[ "$(stat -c %s "$file")" = "$expected_size" ] || return 1
+	[ "${#expected_hash}" -eq 64 ] || return 1
+	actual_hash=$(sha256sum "$file") || return 1
+	[ "${actual_hash%% *}" = "$expected_hash" ] || {
+		echo "Boot image checksum mismatch: $file" >&2
+		return 1
+	}
+}
+
+flash_android_boot_images() {
+	local directory="$1" flavor="$2"
+	verify_boot_image "$directory/boot.img$flavor" "$BOOT_IMAGE_SIZE" "$BOOT_IMAGE_SHA256" || return 1
+	check_boot_capacity "$BOOT_PARTITION" "$BOOT_IMAGE_SIZE" || return 1
+	if [ "$VENDOR_BOOT_REQUIRED" = true ]; then
+		verify_boot_image "$directory/vendor_boot.img$flavor" "$VENDOR_BOOT_IMAGE_SIZE" "$VENDOR_BOOT_IMAGE_SHA256" || return 1
+		check_boot_capacity "$VENDOR_BOOT_PARTITION" "$VENDOR_BOOT_IMAGE_SIZE" || return 1
+		ui_print "Flashing vendor_boot.img to slot '$BOOT_SLOT_SUFFIX'..."
+		dd if="$directory/vendor_boot.img$flavor" of="$VENDOR_BOOT_PARTITION" bs=1M conv=fsync || return 1
+	fi
+	ui_print "Flashing boot.img to slot '$BOOT_SLOT_SUFFIX'..."
+	dd if="$directory/boot.img$flavor" of="$BOOT_PARTITION" bs=1M conv=fsync || return 1
+	sync
+}

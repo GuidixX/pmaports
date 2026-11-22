@@ -1,15 +1,30 @@
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=postmarketos-android-recovery-installer
 pkgver=1.0.7
-pkgrel=1
+pkgrel=2
 pkgdesc="TWRP compatible postmarketOS installer script"
 arch="all"
 url="https://postmarketos.org"
 license="GPL-3.0-or-later"
 # multipath-tools: kpartx
-depends="busybox-extras lddtree cryptsetup multipath-tools device-mapper parted util-linux zip e2fsprogs tar"
-source="https://gitlab.com/postmarketos/postmarketos-android-recovery-installer/-/archive/$pkgver/postmarketos-android-recovery-installer-$pkgver.tar.gz"
+depends="busybox-extras lddtree cryptsetup multipath-tools device-mapper parted util-linux zip e2fsprogs tar python3"
+source="
+	https://gitlab.com/postmarketos/postmarketos-android-recovery-installer/-/archive/$pkgver/postmarketos-android-recovery-installer-$pkgver.tar.gz
+	build_zip.sh
+	pmos_chroot
+	pmos_install
+	pmos_install_functions
+	pmos_boot_images
+	generate_boot_options.py
+"
 options="!check" # No tests
+
+prepare() {
+	default_prepare
+	for file in build_zip.sh pmos_chroot pmos_install pmos_install_functions; do
+		cp "$srcdir/$file" "$builddir/$file"
+	done
+}
 
 build() {
 	gcc -static -o disable-warning disable-warning.c
@@ -28,7 +43,17 @@ package() {
 		install -Dm755 $file \
 			"$pkgdir"/var/lib/postmarketos-android-recovery-installer/chroot/bin/$file
 	done
+	install -Dm755 "$srcdir/pmos_boot_images" \
+		"$pkgdir"/var/lib/postmarketos-android-recovery-installer/chroot/bin/pmos_boot_images
+	install -Dm755 "$srcdir/generate_boot_options.py" \
+		"$pkgdir"/usr/libexec/postmarketos-android-recovery-installer/generate_boot_options.py
 }
 sha512sums="
 22481d26d78388eb67278a1ddd699abc3ca1c5df3c9f1d386d3fb95076e50d9209c8388d5700a6da5e476ac96023d55624c27b427767ee65775c24369dc11313  postmarketos-android-recovery-installer-1.0.7.tar.gz
+af12bd23d8dbdbdba4efa1a1a62fa0685fd1826eca44a67022d22291faf4e4fcfc5ec2cc64740311104465421731f788098cd38d7c661423365e5a24f76cfbcd  build_zip.sh
+4ff19cf20d97307f531c849482fdf8b0ab70e0d6eba2c52e9a6a16a75210ea2bfee853bf9bad21cd9c3c98c7917aaf43b8b9b65ec0c508edada2112cbd0c97ac  pmos_chroot
+6e0731eb3ad54cfae28c960c00e7a15b3fa46f207c818eafa77bf1490be9be38a403a4358baf4bd80517ea8a4e7cdbc6c10f604568c59d5e7268206a604e4a5c  pmos_install
+2d11e74b5f95c66d87c958a58bb90bfa507ea60cd5c99027a610c494c938fdf899e8a2328542deca722c6d4db21ebe7da11ae03d061111a61167b2302452f3e9  pmos_install_functions
+566e2ce7f7933c5334fab27ece5177dd3e3ba93a8c131d9603592e3cf1d469a2432b2b8cb32c0afdebf5dd854707dbc40f3dd4be4796d3a930ad8830d48bc299  pmos_boot_images
+5cd3e51d4433f1c3f94418f4060b6354b0e898c6d6d25440c13bf412702617444c521dc703a186aaa1890e0a9ff307786e553481006d50748179daa6bf984686  generate_boot_options.py
 "
