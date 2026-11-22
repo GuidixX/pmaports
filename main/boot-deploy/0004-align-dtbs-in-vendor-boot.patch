@@ -1,0 +1,19 @@
+--- a/boot-deploy-functions.sh
++++ b/boot-deploy-functions.sh
+@@ -747,12 +747,13 @@
+ 				# mkbootimg accepts one --dtb file; vendor_boot can contain
+ 				# concatenated FDTs selected by the bootloader's board ID.
+ 				_dtb="$work_dir/vendor-boot-dtb.img"
+-				: > "$_dtb"
+-				local _dtb_name _dtb_path
++				local _dtb_name _dtb_path _dtb_files=""
+ 				for _dtb_name in $deviceinfo_dtb; do
+ 					_dtb_path="$(find_dtb "$_dtb_name")" || exit 1
+-					cat "$_dtb_path" >> "$_dtb" || exit 1
++					_dtb_files="$_dtb_files $_dtb_path"
+ 				done
++				require_package "python3" "python3" "generate_bootimg"
++				python3 "${BOOT_DEPLOY_PACK_DTBS:-/usr/libexec/boot-deploy/pack-dtbs.py}" "$_dtb" $_dtb_files || exit 1
+ 				;;
+ 			*) _dtb="$(find_dtb "$deviceinfo_dtb")" ;;
+ 			esac

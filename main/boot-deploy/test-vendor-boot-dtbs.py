@@ -64,7 +64,9 @@ class VendorBootTest(unittest.TestCase):
                      "TEST_TAGS_OFFSET": "0x00000100", "TEST_CUSTOM_ARGS": ""}
         addresses.update(settings)
         return subprocess.run(["sh", "-c", HARNESS, "test", str(FUNCTIONS)],
-                              env={**os.environ, **addresses, "BOOT_DEPLOY_FIRMWARE_DEDUP": str(Path(__file__).resolve().with_name('deduplicate-firmware.py')),
+                              env={**os.environ, **addresses,
+                                   "BOOT_DEPLOY_PACK_DTBS": str(Path(__file__).resolve().with_name('pack-dtbs.py')),
+                                   "BOOT_DEPLOY_FIRMWARE_DEDUP": str(Path(__file__).resolve().with_name('deduplicate-firmware.py')),
                                    "TEST_DTB_DIR": str(self.root),
                                    "TEST_OUTPUT": str(self.root), "TEST_HEADER": str(version),
                                    "TEST_DTBS": names}, capture_output=True, text=True)
@@ -80,7 +82,22 @@ class VendorBootTest(unittest.TestCase):
         header_size, dtb_size = struct.unpack_from("<II", data, 2096)
         align = lambda size: (size + page - 1) // page * page
         start = align(header_size) + align(ramdisk_size)
-        self.assertEqual(data[start:start + dtb_size], expected)
+        position, padded = 0, bytearray()
+        while position < len(expected):
+            size = struct.unpack_from('>I', expected, position + 4)[0]
+            blob = bytearray(expected[position:position + size])
+            position += size
+            blob.extend(b'\0' * (-len(blob) % 8))
+            struct.pack_into('>I', blob, 4, len(blob))
+            padded.extend(blob)
+        self.assertEqual(data[start:start + dtb_size], padded)
+        position = 0
+        while position < dtb_size:
+            self.assertEqual((start + position) % 8, 0)
+            size = struct.unpack_from('>I', data, start + position + 4)[0]
+            self.assertEqual(size % 8, 0)
+            position += size
+        self.assertEqual(position, dtb_size)
         boot = (self.root / "boot.img").read_bytes()
         self.assertEqual(boot[:8], b"ANDROID!")
         self.assertEqual(struct.unpack_from("<I", boot, 40)[0], version)
