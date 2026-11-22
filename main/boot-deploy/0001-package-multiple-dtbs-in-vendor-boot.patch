@@ -1,0 +1,24 @@
+--- a/boot-deploy-functions.sh
++++ b/boot-deploy-functions.sh
+@@ -742,7 +742,20 @@
+ 
+ 	local _dtb=""
+ 	if [ -n "${deviceinfo_dtb}" ]; then
+-		_dtb="$(find_dtb "$deviceinfo_dtb")"
++		case "$deviceinfo_header_version" in
++			3|4)
++				# mkbootimg accepts one --dtb file; vendor_boot can contain
++				# concatenated FDTs selected by the bootloader's board ID.
++				_dtb="$work_dir/vendor-boot-dtb.img"
++				: > "$_dtb"
++				local _dtb_name _dtb_path
++				for _dtb_name in $deviceinfo_dtb; do
++					_dtb_path="$(find_dtb "$_dtb_name")" || exit 1
++					cat "$_dtb_path" >> "$_dtb" || exit 1
++				done
++				;;
++			*) _dtb="$(find_dtb "$deviceinfo_dtb")" ;;
++			esac
+ 	fi
+ 
+ 	local _second=""

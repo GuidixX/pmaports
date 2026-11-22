@@ -1,7 +1,7 @@
 maintainer="Clayton Craft <clayton@craftyguy.net>"
 pkgname=boot-deploy
 pkgver=0.25.0
-pkgrel=0
+pkgrel=1
 pkgdesc="tool for finalizing and deploying boot related files"
 url="https://gitlab.postmarketos.org/postmarketOS/boot-deploy"
 arch="noarch"
@@ -10,13 +10,16 @@ source="
 	https://gitlab.postmarketos.org/postmarketOS/boot-deploy/-/archive/$pkgver/boot-deploy-$pkgver.tar.gz
 
 	os-customization
+	0001-package-multiple-dtbs-in-vendor-boot.patch
+	test-vendor-boot-dtbs.py
 	"
 depends="generate-kernel-cmdline"
 # needed for /usr/lib/os-release
-checkdepends="postmarketos-release"
+checkdepends="postmarketos-release android-tools-mkbootimg python3"
 
 check() {
 	./test_boot_deploy_functions.sh
+	python3 "$srcdir/test-vendor-boot-dtbs.py" "$builddir/boot-deploy-functions.sh"
 }
 
 package() {
@@ -33,4 +36,6 @@ package() {
 sha512sums="
 a1fa5bb4380cbdf593db78353a533a3b8115d382a0f3ad9ee212b03fba13ea7276fcd026b266ac3194fe578f7338f65a5759fe257c008e0fe8b7bef031004e0b  boot-deploy-0.25.0.tar.gz
 a243975b9850d9933e0f917f7eb38fc4a76ea658c3dcc56f035f60ee6c62d6740c1107143b8210bdc0231d4c9b6b2003e458120985604eb09649322d359ae89f  os-customization
+cfd284413c092548404e993710eee5eb151fdbfb409c1fc3d35c8d547a0045fd7b458bc28f3ca28ad0de3c421a32327ac5a455ada62c80910b9e05b2c8adc848  0001-package-multiple-dtbs-in-vendor-boot.patch
+6e5a0ba0b0421890812682c608ecb392ce902c7eb68ce99c2930df03022c8ad75ea647b30501fc0b5762dd41986efdf24bfb3f188ae1d6479262fdfb0e3ec86e  test-vendor-boot-dtbs.py
 "
