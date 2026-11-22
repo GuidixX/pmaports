@@ -191,6 +191,7 @@ IIO_ST_ACCEL_I2C_3AXIS = "m"
 IIO_ST_ACCEL_SPI_3AXIS = "m"
 INPUT_REGULATOR_HAPTIC = "m"
 INPUT_TOUCHSCREEN = "y"
+KEYBOARD_GPIO = "m"
 MOUSE_BCM5974 = "m"
 RMI4_CORE = "m"
 RMI4_I2C = "m"
@@ -219,6 +220,8 @@ I2C_HID_OF_GOODIX = "m"
 ["category:input".">=0.0.0"."aarch64 loongarch64 riscv64 x86 x86_64"]
 I2C_HID_ACPI = "m"
 ["category:input".">=0.0.0"."x86_64"]
+INPUT_SOC_BUTTON_ARRAY = "m"
+INTEL_HID_EVENT = "m"
 STEAM_FF = "y"
 
 # led and light devices
@@ -315,7 +318,6 @@ RT61PCI = "m"
 RT73USB = "m"
 RTL8180 = "m"
 RTL8187 = "m"
-RTL8723BS = "m"
 RTL8XXXU = "m"
 RTW88 = "m"
 RTW88_8723DE = "m"
@@ -342,11 +344,18 @@ RTW89_8922AE = "m"
 ["category:network".">=6.19.0"."all"]
 RTW89_8852AU = "m"
 RTW89_8852CU = "m"
+["category:network"."<7.4_rc1"."all"]
+RTL8723BS = "m"
+["category:network".">=7.4_rc1"."all"]
+RTW88_8723BS = "m"
 
 # NFC controllers
 ["category:nfc".">=0.0.0"."all"]
 NFC = "m"
 NFC_HCI = "m"
+NFC_PN532_UART = "m"
+NFC_PN533_I2C = "m"
+NFC_PN533_USB = "m"
 NFC_PN544_I2C = "m"
 NFC_SHDLC = "y"
 

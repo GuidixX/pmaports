@@ -2,7 +2,7 @@
 maintainer="Stefan Hansson <newbyte@postmarketos.org>"
 pkgname=device-htc-golfu
 pkgdesc="HTC Desire C"
-pkgver=5
+pkgver=7
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -22,5 +22,5 @@ package() {
 }
 
 sha512sums="
-86d70dc201b41164095acc836edddd0cca7742a9955b17f00817d3493dc837f66f278eb32547c4e2947ac6763efb0a10bdfe4927e99e546e44053d2c5e5b5304  deviceinfo
+30f1f5392411966caee486e8f3e6f938e2b1020413885562179cc1d18d82e672f9339e45b0058f61fd6f8216fa84b3304df6287639e5179a9343bcae79d23292  deviceinfo
 "

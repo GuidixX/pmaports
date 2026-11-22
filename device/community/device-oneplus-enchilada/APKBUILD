@@ -1,9 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
-# Co-Maintainer: DrRac27 <drrac27@riseup.net>
-maintainer="Casey Connolly <kcxt@postmarketos.org>"
+maintainer="DrRac27 <drrac27@riseup.net>"
 pkgname=device-oneplus-enchilada
 pkgdesc="OnePlus 6"
-pkgver=30
+pkgver=32
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -12,7 +11,6 @@ options="!check !archcheck"
 depends="
 	alsa-ucm-conf-sdm845
 	firmware-oneplus-sdm845>=9
-	firmware-oneplus-sdm845-sensors
 	hexagonrpcd>=0.3.2-r3
 	linux-postmarketos-qcom-sdm845
 	mkbootimg

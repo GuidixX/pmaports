@@ -9,7 +9,7 @@ fi
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=musl-x86_64
 pkgver=1.2.6
-pkgrel=3
+pkgrel=6
 arch="aarch64"
 subpackages="musl-dev-x86_64:package_dev"
 
@@ -58,6 +58,6 @@ package_dev() {
 }
 
 sha512sums="
-255d27d60b7d7cf913c472df7ee2c0b81eb26461be7cf9504782c5692a9b723dd86db1ef6be952ab70ea78041e3c05649fd86b3e7e746fc8f78fe0bcbad29de7  musl-1.2.6-r3-x86_64-edge.apk
-35748ec4fbbf0c5abc300ecd015ffae2d7a173510f30541f7643a0ba8fb3be85d161f949da0e830509f23a538546a9a3fbfe072799fbce033f90f34fca60545d  musl-dev-1.2.6-r3-x86_64-edge.apk
+aad09bf034cd8d8ed7793ffec07d676be23295695a01e192855a44eb7db446ac0b6433b4c19efd3e22d9fb6d2c87cedb4f2d20219bf88d418145c040b0454e44  musl-1.2.6-r6-x86_64-edge.apk
+ea419465b40554e1f20403aa37a76bb0049c9ee5c0f0911ccd404b7379c765639a844ebd25eb8761b89c2c412f7a5d428737757b960cdec377401573d34c1f6e  musl-dev-1.2.6-r6-x86_64-edge.apk
 "

@@ -76,7 +76,7 @@ class Device:
     @cached_property
     def package_dependencies(self) -> set[str]:
         # HACK: Work around a bug in depends_recurse which prevents listing all the dependencies
-        # Bug: https://gitlab.postmarketos.org/postmarketOS/pmbootstrap/-/issues/2623
+        # Bug: https://gitlab.nura.eco/nura/pmbootstrap/-/issues/2623
         return {"postmarketos-initramfs"}
         # return pmb.helpers.package.depends_recurse(pkgname=self.pkgname,
         #                                            arch=self.arch)
@@ -138,13 +138,7 @@ class Device:
 
 class ArchTagSet(set):
     def update(self, iterable):
-        supported_arches = Arch.supported_binary()
-        # This ignores things like !armv7, that could be a follow-up optimization
-        if "noarch" in iterable or "all" in iterable:
-            iterable = [arch for arch in supported_arches]
-        super().update(
-            [Arch(arch) for arch in iterable if Arch(arch) in supported_arches]
-        )
+        super().update(Arch.from_arch_field(iterable).intersection(Arch.supported_binary()))
 
 
 if __name__ == "__main__":
@@ -195,6 +189,10 @@ if __name__ == "__main__":
         for device in supported_devices.values():
             if apkbuild["pkgname"] in device.dependencies:
                 devices_under_test.add(device)
+
+        # Test all devices when the test package itself is modified
+        if apkbuild["pkgname"] == "postmarketos-test":
+            devices_under_test.update(supported_devices.values())
 
     if common.commit_message_has_string("[ci:skip-build]"):
         print("User requested skipping build, skipping build")

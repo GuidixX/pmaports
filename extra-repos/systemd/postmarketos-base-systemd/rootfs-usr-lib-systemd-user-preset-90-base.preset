@@ -33,3 +33,7 @@ enable phosh-os-updater.service
 
 # Plasma
 enable drkonqi-coredump-launcher.socket
+
+## steamos / opengamepadui
+enable steamos-manager.service
+enable decky-loader.service

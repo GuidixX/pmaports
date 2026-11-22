@@ -9,7 +9,7 @@ fi
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=musl-loongarch64
 pkgver=1.2.6
-pkgrel=3
+pkgrel=6
 arch="aarch64 x86_64"
 subpackages="musl-dev-loongarch64:package_dev"
 
@@ -58,6 +58,6 @@ package_dev() {
 }
 
 sha512sums="
-69c3ad509e0fbb3d24e4e3c949cd62c36475a673b8356281b0f9a26bb27ec292e1b4518fa5d5435b193781f04a6ce2919d898aabdb2e56e4f21348abb238baa0  musl-1.2.6-r3-loongarch64-edge.apk
-117212614bccb5cff133ee01994dbcbd90bcc7f18bc627f46e12a388f78506b292f4b030f2468601d64b1ae3cd03c49fc5a2a72f8829d93ff4169b64e67a2078  musl-dev-1.2.6-r3-loongarch64-edge.apk
+65f84d751a3210e8e094bafbb2cd8780a66e2ca4052e360ead6de412dbd764089947fa385a5a3857934f77111dced26d3ec7bc33946c36aa02a6aeb50a22c73c  musl-1.2.6-r6-loongarch64-edge.apk
+24041826dfb50e10ad5aee54991191479f3542309c046399c486976ba0f1788c2ae9c20be2aef6910f6ff62c4c97b734f38e75542b11319d81c47b3e2b9c0ef4  musl-dev-1.2.6-r6-loongarch64-edge.apk
 "

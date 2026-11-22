@@ -1,6 +1,6 @@
 maintainer="Clayton Craft <clayton@craftyguy.net>"
 pkgname=postmarketos-base-ui
-pkgver=61
+pkgver=66
 pkgrel=0
 pkgdesc="Meta package for minimal postmarketOS UI base"
 url="https://postmarketos.org"
@@ -10,6 +10,7 @@ depends="
 	avahi
 	chrony
 	dbus
+	fwupd
 	haveged
 	nftables
 	pipewire
@@ -45,6 +46,7 @@ subpackages="
 	$pkgname-qt-wayland:qt_wayland
 	$pkgname-tinydm
 	$pkgname-tinydm-openrc:tinydm_openrc
+	$pkgname-udev
 	$pkgname-wayland
 	$pkgname-wifi-iwd:iwd
 	$pkgname-wifi-iwd-openrc:iwd_openrc
@@ -84,7 +86,6 @@ _pmb_recommends="
 _source644="
 	etc/chrony/chrony.conf
 	etc/environment
-	etc/elogind/logind.conf
 	etc/conf.d/bluetooth
 	etc/conf.d/openrc-settingsd
 	etc/conf.d/modemmanager
@@ -96,6 +97,8 @@ _source644="
 	etc/pulse/default.pa.d/postmarketos.pa
 	etc/sleep-inhibitor.conf
 	etc/X11/Xwrapper.config
+	usr/lib/elogind/logind.conf
+	usr/lib/environment.d/electron-wayland.conf
 	usr/lib/NetworkManager/conf.d/50-connectivity.conf
 	usr/lib/NetworkManager/conf.d/50-hostname-mode.conf
 	usr/lib/NetworkManager/conf.d/50-iwd.conf
@@ -188,10 +191,9 @@ openrc() {
 elogind() {
 	install_if="$pkgname=$pkgver-r$pkgrel elogind"
 	depends="!systemd-logind sleep-inhibitor-openrc openrc"
-	replaces="elogind"
 	provides="postmarketos-base-elogind=$pkgver-r$pkgrel"
 
-	amove etc/elogind/logind.conf
+	amove usr/lib/elogind/logind.conf
 }
 
 openrc_settingsd() {
@@ -350,7 +352,6 @@ iio_sensor_proxy_systemd() {
 sha512sums="
 187baa4a2b77e1e97a13536553ef2e1f64c3968f07ab2a372b550e4eee10a801a3b9797766d0d9f566148230335f3d4d150cd335bc40050322313a195874d608  rootfs-etc-chrony-chrony.conf
 78ce55d9bb50db22df3f4b8a0757f7d6147caa212bcc5366b8bc03cdabfd6f20354c272120d75789424d1cacc17cd62facbf3fae497d9f1714756578c80d3072  rootfs-etc-environment
-8d2c54fe3ca62c62f8337fb6be28479d0e02ea63f32abae81907f2768631e65c9e17485f8bc0854a013377f729b06dd1873e2b75f86f657ece866d00aecbbdb4  rootfs-etc-elogind-logind.conf
 b841282b96110ec59a7aa539db0737327b09549d55c78dc4b2c3b28b4a6ad1facf015b3175cb6d3a38f13e47aa6314ef3dc1514a4e60dd653a97409ec54ba706  rootfs-etc-conf.d-bluetooth
 49fb494b659fe0149a93eafe109609acce6a470bb8acea160638d07e0e4b11af2544f34549d5ef2deb2914a7ef13d0d470b04ad62981f14f96999af02a5f24cf  rootfs-etc-conf.d-openrc-settingsd
 e33f41360ccc4900bb76a26cc7b46bde1fb90facdf45c4fbcebc80499386939948401cacd6df9f779eafab10f4ee77ee1fef3e7bd06f483f8c2a4a644c84f327  rootfs-etc-conf.d-modemmanager
@@ -362,6 +363,8 @@ e60bfff4ae4b246e9b31cfe1aab55b670b7bb49f670830846d623a6d7f21c6d5c8b90a62a8612b62
 6c516635a61fbaa93102f02301a75070a91de837456b07a50e24a9e0ee5dac785087d4a8f78906807719ebf6f0124127383441cccf00475d9a91d3dbaf9d4d81  rootfs-etc-pulse-default.pa.d-postmarketos.pa
 041e50a7f78f7f03153175027439fc203f3dc81ed9970c579a16728d36e006e77f49b0321ee4bb7bb127fa6e4c31de3e7029f80ea75c4afc83bae7d24906372d  rootfs-etc-sleep-inhibitor.conf
 cac604e25c46e695dd30bd5a10cfd2d69595fcc3bc290096ac94b76b10834d591ea6576afb79c46b5da492a1dbf8660cf87b6110cd39937e15237bc74fa7a5c6  rootfs-etc-X11-Xwrapper.config
+ffa32b4c5c510e4a0f1a83ec89adf237e433d3245d3b41ca36d4c30ed3488d3d0361bc652241eea71082144213dad0cf791100199ecd77a2bb08fcc0513aa924  rootfs-usr-lib-elogind-logind.conf
+c50ab146d3afed16ccc84f526f62f0a8065b8354668327f217eb629806b67f2bcde507757ded9b975321cae0fb80e759d13a0edcb91ad0670415de7b9631eb83  rootfs-usr-lib-environment.d-electron-wayland.conf
 53a61899e0e2188e6fc6ee33c151e73078b7f6cb37d98fc820e17c75b4d2d9c0fdd6d782da896f656811f3a7c45c17216cf3fffb406bbdf639903389903f96d9  rootfs-usr-lib-NetworkManager-conf.d-50-connectivity.conf
 3c9ae7415f4891bee8595166ed6a42cb577a837f741c6b5409d193558626348b41516888a01d0c4895282c5f4e9a1ff838c19712888750b2ef68429bb4b42ee3  rootfs-usr-lib-NetworkManager-conf.d-50-hostname-mode.conf
 439615745d5be0d1ab6801cfbf960a31b12da30bf5df64ba2914ff32dae9e650595d7f96e66f5dff6308f092de1f746277ea7f4e701888a22571f7c119b7bf0d  rootfs-usr-lib-NetworkManager-conf.d-50-iwd.conf
@@ -374,6 +377,6 @@ cc86775a7820eb683e67df7d23ebae9d72699a643ff1452c71daf38ac6c39a84fd1686e67351ab0a
 178a8b584eb4d60eff084328713924f20414892e558559002fc753011ef4b0aa73c8abceb943f842c702ce31525a28c3e1cbdaac0392da557e9a034a6e7be7ae  rootfs-usr-lib-udev-rules.d-90-iio-sensor-proxy-proximity-sensor-enable.rules
 54620e508a5070ec8819e3661e592acfcfd26c52170b0ecc4dbbc1c61998963ce20bf9d9b051a608b76d6fc17e61c65decc16602b7d58061b9149667a968d258  rootfs-usr-share-flatpak-remotes.d-flathub.flatpakrepo
 92930f027626825b027f585a9be180f8a6ebae6dc44d2cf8f9d43cce00db8cbb43c33fc341fe382abacb832ea1b6414dc4c8129d265b0258d096599b2e206a93  rootfs-usr-share-wireplumber-wireplumber.conf.d-50-bluetooth.conf
-66a7a72746e822676d0ec76160e39b65c711e574a6334f3aad38c563d3104b33d0619d50b92c9201546fd81bfd10cfe0e4a59278cbcbddf20a238f6ad71c050c  rootfs-usr-share-mkinitfs-files-10-wireless-regdb.files
+7c25e0beeb46d001d7186de88f13c9cec78dafc946d1a6ec5d2b4eac8e608c7ead264764dd5a1766aea60dcc17931945eb68899d8810710816d66d93b9545393  rootfs-usr-share-mkinitfs-files-10-wireless-regdb.files
 ecaa57d033a119a53a6574c27636b7c89d659d75ea48a973a6a4ff6f90e5d07202529fd489bfc9dfc7430f5b60f40612f6d5c06f7fab47e681b0a3112a874058  rootfs-usr-share-tinydm-env-wayland.d-50-sdl-wayland.sh
 "

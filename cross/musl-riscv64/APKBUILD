@@ -9,7 +9,7 @@ fi
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=musl-riscv64
 pkgver=1.2.6
-pkgrel=3
+pkgrel=6
 arch="aarch64 x86_64"
 subpackages="musl-dev-riscv64:package_dev"
 
@@ -58,6 +58,6 @@ package_dev() {
 }
 
 sha512sums="
-ebc7810645bf301ea94ba0fde43400423ed03c7f545a63869ea91b5f3aec96c4f7f23e1052413ae9f0d642976c0d42e68eef05aa3268e06a345ba6cc8ba447ad  musl-1.2.6-r3-riscv64-edge.apk
-01ca1f782053bc59582c6168aa29317aaa28b8879b7d862ac27b10c78790df58f47416a983daa5f1e0a226f1292f032eab7fbaab40e6ba7f71cf51c086e8d936  musl-dev-1.2.6-r3-riscv64-edge.apk
+853dd33929e8dcb6eb778e496e02c40b857caadb1e1707fb080748e8ef17a9e7994a9a5fb55b94627bb79708ce480c297d47f26fce1ed3e828992f5b5aac4cab  musl-1.2.6-r6-riscv64-edge.apk
+cb77e8bf89afa87f13bf15b9e4126b697ed24f582befdbedda6b96ef09a31d9757de2cdf679d75e80de39ba403109a282d5e6150a4a536a56e6115cbb1d1cee0  musl-dev-1.2.6-r6-riscv64-edge.apk
 "

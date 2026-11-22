@@ -9,7 +9,7 @@ fi
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=musl-ppc64le
 pkgver=1.2.6
-pkgrel=3
+pkgrel=6
 arch="aarch64 x86_64"
 subpackages="musl-dev-ppc64le:package_dev"
 
@@ -58,6 +58,6 @@ package_dev() {
 }
 
 sha512sums="
-9eb7d08d9b8b89634962d2b4f5a98cc9e28316ae036d21e38d0254816dd90191275b3746bd7bfc5797bda0b94528a28ad74542018a215a029138a9d942ebf294  musl-1.2.6-r3-ppc64le-edge.apk
-ffb8a1044c7cd0983b90844d5eebdd842e11a1caf7e76796d04c09b8e19eaf838c1141dc836a783a459ab7080b631b487d5e205a534e489a4af97902bdcf5e44  musl-dev-1.2.6-r3-ppc64le-edge.apk
+9f690762d9e2415e47e0731470deb6098e8996d72f5a0e487317c7e263c58d8ecbf959ef03c78d01aba196e6094efaae048335c751b61824d7670db4a58e81a6  musl-1.2.6-r6-ppc64le-edge.apk
+1347dcaa2c3f3bac4985fdfa986598be416462a311380c52a0a828a148d459a234d5e9e22740e62c6844222939631c82fb194e1216da0ef119013f060b0b4170  musl-dev-1.2.6-r6-ppc64le-edge.apk
 "

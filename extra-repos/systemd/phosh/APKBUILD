@@ -5,9 +5,9 @@
 # Co-Maintainer: Achill Gilgenast <achill@achill.org>
 maintainer="Stefan Hansson <newbyte@postmarketos.org>"
 pkgname=phosh
-_pkgver=0.57.0
+_pkgver=0.59.0
 pkgver=9999$_pkgver
-pkgrel=2
+pkgrel=1
 pkgdesc="Wayland shell for GNOME on mobile devices"
 # armhf: blocked by gnome-shell-schemas
 arch="all !armhf"
@@ -29,13 +29,14 @@ depends="
 	gsettings-desktop-schemas
 	phoc
 	phosh-keyboard
+	slurp
 	xwayland
 	"
 makedepends="
 	$depends
 	appstream-dev
 	callaudiod-dev
-	systemd-dev
+	dconf-dev
 	evince-dev
 	evolution-data-server-dev
 	feedbackd-dev
@@ -54,10 +55,12 @@ makedepends="
 	meson
 	modemmanager-dev
 	networkmanager-dev
+	pipewire-dev
 	polkit-dev
 	pulseaudio-dev
 	py3-docutils
 	qrcodegen-dev
+	systemd-dev
 	upower-dev
 	wayland-dev
 	wayland-protocols
@@ -77,9 +80,7 @@ subpackages="
 	$pkgname-schemas::noarch
 	$pkgname-systemd
 	"
-source="https://sources.phosh.mobi/releases/phosh/phosh-${_pkgver/_/.}.tar.xz
-	splash-timeout-flatpak-dbus.patch
-	"
+source="https://sources.phosh.mobi/releases/phosh/phosh-${_pkgver/_/.}.tar.xz"
 builddir="$srcdir/$pkgname-${_pkgver/_/.}"
 somask="libphoshsearch.so"
 # crossdirect disabled because the ARMv7 cross compiler crashes internally with LTO
@@ -128,6 +129,5 @@ schemas() {
 }
 
 sha512sums="
-51219a3295b061047765368a0f65a02b131c4b229ec03713f547595b73a98c51b99086769bf0584dd7d44b8426b21d50162e76e955fb7a37a5136cefa253fea8  phosh-0.57.0.tar.xz
-cb4bad612e5d2dff156c6b97b460c16ab7fd48067935b616fe0b65d11c3d255f1ecd06b800c654ac9ea93bc53e823eb47134836dfdf61bb338588dab78d3b9e9  splash-timeout-flatpak-dbus.patch
+dbbe0149092f350c7eda01c12a4729c7b36e38ae782ed79adcf30825f8a0bf06efc3b7d40ba1d50e039427fc6ef97dd6663538882cb8e3d1ae426a0e3a9aadac  phosh-0.59.0.tar.xz
 "

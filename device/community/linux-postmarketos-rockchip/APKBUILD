@@ -1,26 +1,31 @@
 maintainer="Antoine Martin (ayakael) <dev@ayakael.net>"
 pkgname=linux-postmarketos-rockchip
-pkgver=7.0.14
+pkgver=7.3.1
 _kernver=${pkgver%.*}
-pkgrel=0
+pkgrel=2
 pkgdesc="Mainline kernel for rockchip devices"
 arch="aarch64"
 _carch="arm64"
 _flavor="${pkgname#linux-}"
+_defconfig="defconfig"
 url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps
 	pmb:cross-native
 	pmb:kconfigcheck-community
-	pmb:kconfigcheck-nftables
+	pmb:kconfigcheck-rust
+	pmb:kconfigcheck-uefi
 "
 makedepends="
 	bash
 	bison
 	clang
+	clang-libclang
+	diffutils
 	elfutils-dev
 	findutils
 	flex
+	gzip
 	kmod
 	linux-headers
 	lld
@@ -30,12 +35,23 @@ makedepends="
 	perl
 	postmarketos-installkernel
 	python3
-	xz
+	rust
+	rust-bindgen
+	rust-src
+	rustfmt
+	sed
 	zstd
 "
 # to allow A/B comparison testing
-replaces="linux-pine64-pinenote"
-provides="linux-pine64-pinenote=$pkgver-r$pkgrel"
+
+replaces="
+	linux-pine64-pinenote
+	linux-clockworkpi-uconsole-radxa-cm5
+	"
+provides="
+	linux-pine64-pinenote=$pkgver-r$pkgrel
+	linux-clockworkpi-uconsole-radxa-cm5=$pkgver-r$pkgrel
+	"
 
 # Source
 _config="config-$_flavor.$arch"
@@ -48,6 +64,7 @@ source="
 	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
 	rk3566-pinenote-support.patch
 	rk3566-pinenote-ultra-suspend.patch
+	rk3588-uconsole-support.patch
 	$_config
 "
 builddir="$srcdir"/linux-$_kernver
@@ -87,16 +104,17 @@ package() {
 		INSTALL_MOD_PATH="$pkgdir"/usr \
 		INSTALL_MOD_STRIP=1 \
 		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
-	rm -f "$pkgdir"/lib/modules/*/build "$pkgdir"/lib/modules/*/source
+	rm "$pkgdir"/usr/lib/modules/*/build
 
 	install -D "$builddir"/include/config/kernel.release \
 		"$pkgdir"/usr/share/kernel/$_flavor/kernel.release
 }
 
 sha512sums="
-7e4d106e62e7ad9cb5e23f439f6ddf4418dbbf37008bc7d1349ab231dac41b857805b6689db25095640cb990ccff2d8e5c8aaa136dd463b345b9d5777ee08e0f  linux-postmarketos-rockchip-7.0.14.patch.xz
-8c85b708342f8f09ca25b2234b22e93b62b144a9ef919fbb21827f52fa47498e778c79db1559524dd7fb360f95b2ce174171443c1859656c281be41d2b6c5a0b  linux-7.0.tar.xz
-a847efc685757cf8250891e06434ee65e449ec1d83d49f3157f2b72528db2da9da11b23b7a1b223645de577414fde15e06fce621bfce5ff02779598ad1d41cf5  rk3566-pinenote-support.patch
-665bdc843912a22bc9f1840bf89195f6cccabd2b8ca3313f3c61b5503c84f98395e3de0d28bc31cbc9f1b4be4a41a483db156fad353506bb5be7abdc22e46501  rk3566-pinenote-ultra-suspend.patch
-b350b844142e94b9f7da65e6e4cf936c2442270f19e6be6bb1f714f005842303965401f91ecc6064484ac09df005b37e4036b57d5d60b2caa6a8d2fda5fdc01a  config-postmarketos-rockchip.aarch64
+7b46c3228abee0e682008297c7667d0f68c87a1fcf25f096649748604b8e45e3f1561405d3b6d3f1a0adf1d4f6d8ade9f6dc11e5c89800a093e1d97187c94bdf  linux-postmarketos-rockchip-7.3.1.patch.xz
+14b99ea7cc2adc0798a183ac5f3e184587f2496c3b2d1d53b625574389891c69e8be375b5d03875fe859b09ac9314aa15da604087274ba815671135bd6a0e590  linux-7.3.tar.xz
+dcfd10710dff4d49d9b03eb9e64f3754f274b39dc216de5d814e1ad43ed120799f31ea892efe0862aeb75d18c36c404e46673c26e3a88c1635ae8c76faf7b22f  rk3566-pinenote-support.patch
+bcb43e41178eceb20713720644afca63715d6a17a5c3fbd2b6cec43be173d2327e004f569deb953a2bd5a0566e1773a79ad5ad7ce5f30f3942d1e0978693cee8  rk3566-pinenote-ultra-suspend.patch
+b1ad7471b5801fd315996dc406bf89ec841e3e6b13c8a067f900d9740ca107c5df76795edf8e4aae1597ee2703674ba469d53a804ba61be083c135e6af161fc7  rk3588-uconsole-support.patch
+a0df19e6e30aaeba025f48806addb75aafd003a9ac9309a63b474788558afce1925766aa4482432b9abc32f9376ba94fc80a9b866adb488841677c8696f45d81  config-postmarketos-rockchip.aarch64
 "

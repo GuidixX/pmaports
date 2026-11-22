@@ -9,7 +9,7 @@ fi
 maintainer="Oliver Smith <ollieparanoid@postmarketos.org>"
 pkgname=musl-armv7
 pkgver=1.2.6
-pkgrel=3
+pkgrel=6
 arch="aarch64 x86_64"
 subpackages="musl-dev-armv7:package_dev"
 
@@ -58,6 +58,6 @@ package_dev() {
 }
 
 sha512sums="
-c6e40744cd636e7d12ce95d644bbb8dc20817021811f31bdb93f3729644774a9f2e743e081172d79de83e1140d0a22efd8da2606f216a1035f9236b5f8a16c64  musl-1.2.6-r3-armv7-edge.apk
-054a90fbb150b6cd7518df5d2a1abfeff6296da1c862e9a81466e8255b3cabfd3a27b5a3f356b532550c1c5ab27a81bf64f09003d9dfc18bbb8937007ce61e0f  musl-dev-1.2.6-r3-armv7-edge.apk
+32b865aa426691eaba53a55c7519550fece96e6c6edf607e6f591b405b3b2aa6612f488ae9174b353a692d23a12922e3be59e3330ec380341a0a8bddffb2826c  musl-1.2.6-r6-armv7-edge.apk
+0a59e39e6897af9171b1bbb12f82196a43e48495c0db30244b7d2ce39cc99f4ba037bd50df4289fd58cc8ba2fe29c0c326bb4fcbe01569a98c3669967985cb07  musl-dev-1.2.6-r6-armv7-edge.apk
 "

@@ -1,9 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
-# Co-Maintainer: Aster Boese <asterboese@mailbox.org>
 # Co-Maintainer: Matt Panhans <mpanhans@protonmail.com>
-maintainer="Casey Connolly <kcxt@postmarketos.org>"
+maintainer="Aster Boese <asterboese@mailbox.org>"
 pkgname=device-oneplus-fajita
-pkgver=32
+pkgver=34
 pkgrel=0
 pkgdesc="OnePlus 6T"
 url="https://postmarketos.org"
@@ -12,7 +11,6 @@ license="MIT"
 depends="
 	alsa-ucm-conf-sdm845
 	firmware-oneplus-sdm845>=9
-	firmware-oneplus-sdm845-sensors
 	hexagonrpcd>=0.3.2-r3
 	linux-postmarketos-qcom-sdm845
 	mkbootimg
