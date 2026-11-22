@@ -59,7 +59,8 @@ class VendorBootTest(unittest.TestCase):
 
     def build(self, version, names):
         return subprocess.run(["sh", "-c", HARNESS, "test", str(FUNCTIONS)],
-                              env={**os.environ, "TEST_DTB_DIR": str(self.root),
+                              env={**os.environ, "BOOT_DEPLOY_FIRMWARE_DEDUP": str(Path(__file__).resolve().with_name('deduplicate-firmware.py')),
+                                   "TEST_DTB_DIR": str(self.root),
                                    "TEST_OUTPUT": str(self.root), "TEST_HEADER": str(version),
                                    "TEST_DTBS": names}, capture_output=True, text=True)
 

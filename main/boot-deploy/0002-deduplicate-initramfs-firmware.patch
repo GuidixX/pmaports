@@ -1,0 +1,11 @@
+--- a/boot-deploy-functions.sh
++++ b/boot-deploy-functions.sh
+@@ -875,6 +875,8 @@
+ 	# For now we invocate modern mkbootimg differently for header version 4.
+ 	if [ "$deviceinfo_header_version" = "3" ] || [ "$deviceinfo_header_version" = "4" ]; then
+ 		require_package "mkbootimg" "android-tools" "generate_bootimg"
++		require_package "python3" "python3" "generate_bootimg"
++		python3 "${BOOT_DEPLOY_FIRMWARE_DEDUP:-/usr/libexec/boot-deploy/deduplicate-firmware.py}" "$_ramdisk" || exit 1
+ 
+ 		# shellcheck disable=SC2039 disable=SC2086
+ 		mkbootimg \

@@ -1,7 +1,7 @@
 maintainer="Clayton Craft <clayton@craftyguy.net>"
 pkgname=boot-deploy
 pkgver=0.25.0
-pkgrel=1
+pkgrel=2
 pkgdesc="tool for finalizing and deploying boot related files"
 url="https://gitlab.postmarketos.org/postmarketOS/boot-deploy"
 arch="noarch"
@@ -11,9 +11,11 @@ source="
 
 	os-customization
 	0001-package-multiple-dtbs-in-vendor-boot.patch
+	0002-deduplicate-initramfs-firmware.patch
 	test-vendor-boot-dtbs.py
+	deduplicate-firmware.py
 	"
-depends="generate-kernel-cmdline"
+depends="generate-kernel-cmdline python3 zstd"
 # needed for /usr/lib/os-release
 checkdepends="postmarketos-release android-tools-mkbootimg python3"
 
@@ -28,6 +30,8 @@ package() {
 		"$pkgdir"/usr/share/boot-deploy/boot-deploy-functions.sh
 	install -Dm644 "$srcdir"/os-customization \
 		"$pkgdir"/usr/share/boot-deploy/os-customization
+	install -Dm755 "$srcdir"/deduplicate-firmware.py \
+		"$pkgdir"/usr/libexec/boot-deploy/deduplicate-firmware.py
 
 	touch boot-deploy-trigger
 	install -Dm644 boot-deploy-trigger \
@@ -37,5 +41,7 @@ sha512sums="
 a1fa5bb4380cbdf593db78353a533a3b8115d382a0f3ad9ee212b03fba13ea7276fcd026b266ac3194fe578f7338f65a5759fe257c008e0fe8b7bef031004e0b  boot-deploy-0.25.0.tar.gz
 a243975b9850d9933e0f917f7eb38fc4a76ea658c3dcc56f035f60ee6c62d6740c1107143b8210bdc0231d4c9b6b2003e458120985604eb09649322d359ae89f  os-customization
 cfd284413c092548404e993710eee5eb151fdbfb409c1fc3d35c8d547a0045fd7b458bc28f3ca28ad0de3c421a32327ac5a455ada62c80910b9e05b2c8adc848  0001-package-multiple-dtbs-in-vendor-boot.patch
-6e5a0ba0b0421890812682c608ecb392ce902c7eb68ce99c2930df03022c8ad75ea647b30501fc0b5762dd41986efdf24bfb3f188ae1d6479262fdfb0e3ec86e  test-vendor-boot-dtbs.py
+7a8247666da897e754bb254a08adb391b76e825f1b1d84e1b1500e697b7d6695b1fec6aa7923994eabdede2937825f96fff9fc7ba2692b570cc895511dc9f86c  0002-deduplicate-initramfs-firmware.patch
+fa63878c9f0554e4489fa455b3dca2ba52f50db01443d035400b507405a09778a25b126c343c389c3b71b43727790bc1a191470d4e894fad9303906e39af7051  test-vendor-boot-dtbs.py
+8a10381e767887b91f34587a7420bea2e587fca88a17d0ee324d5650933c0c7b57ed5e369909f5b8b6f863f4df5745c2747518c0d6e534a70edbfeb7d2e58d09  deduplicate-firmware.py
 "
