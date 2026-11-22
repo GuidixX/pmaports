@@ -1,0 +1,48 @@
+--- a/boot-deploy-functions.sh
++++ b/boot-deploy-functions.sh
+@@ -401,12 +401,6 @@
+ 	# Remove excess whitespace
+ 	_dtb=$(echo "$_dtb" | xargs)
+ 
+-	if [ "$deviceinfo_header_version" = "2" ] && [ "$(echo "$_dtb" | tr ' ' '\n' | wc -l)" -gt 1 ]; then
+-		log "ERROR: deviceinfo_header_version is 2, but"
+-		log "'deviceinfo_dtb' specifies more than one dtb!"
+-		exit 1
+-	fi
+-
+ 	local _outfile="$work_dir/$kernel_filename-dtb"
+ 	if [ "${deviceinfo_append_dtb}" = "true" ]; then
+ 		log_arrow "kernel: appending device-tree ${deviceinfo_dtb}"
+@@ -743,8 +737,8 @@
+ 	local _dtb=""
+ 	if [ -n "${deviceinfo_dtb}" ]; then
+ 		case "$deviceinfo_header_version" in
+-			3|4)
+-				# mkbootimg accepts one --dtb file; vendor_boot can contain
++			2|3|4)
++				# mkbootimg accepts one --dtb file; boot/vendor_boot can contain
+ 				# concatenated FDTs selected by the bootloader's board ID.
+ 				_dtb="$work_dir/vendor-boot-dtb.img"
+ 				local _dtb_name _dtb_path _dtb_files=""
+@@ -870,6 +864,13 @@
+ 		fi
+ 	fi
+ 
++	case "$deviceinfo_header_version" in
++		2|3|4)
++			require_package "python3" "python3" "generate_bootimg"
++			python3 "${BOOT_DEPLOY_FIRMWARE_DEDUP:-/usr/libexec/boot-deploy/deduplicate-firmware.py}" "$_ramdisk" || exit 1
++			;;
++	esac
++
+ 	# FIXME: mkbootimg in android-tools has major syntax and behavioural differences.
+ 	# One example being --*_offset () with empty parameters will error.
+ 	# A rewrite of this script and/or the deprecation of dated mkbootimg forks should be considered.
+@@ -877,7 +878,6 @@
+ 	if [ "$deviceinfo_header_version" = "3" ] || [ "$deviceinfo_header_version" = "4" ]; then
+ 		require_package "mkbootimg" "android-tools" "generate_bootimg"
+ 		require_package "python3" "python3" "generate_bootimg"
+-		python3 "${BOOT_DEPLOY_FIRMWARE_DEDUP:-/usr/libexec/boot-deploy/deduplicate-firmware.py}" "$_ramdisk" || exit 1
+ 
+ 		# shellcheck disable=SC2039 disable=SC2086
+ 		mkbootimg \

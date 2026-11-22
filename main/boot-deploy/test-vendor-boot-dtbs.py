@@ -16,6 +16,10 @@ find_dtb() {
 	[ -f "$TEST_DTB_DIR/$1.dtb" ] || return 1
 	printf '%s\n' "$TEST_DTB_DIR/$1.dtb"
 }
+find_all_dtbs() {
+	for name in $TEST_DTBS; do find_dtb "$name" || return 1; done
+}
+copy() { :; }
 get_cmdline() { printf '%s\n' 'test=1'; }
 require_package() { command -v "$1" >/dev/null; }
 work_dir="$TEST_OUTPUT"
@@ -32,6 +36,7 @@ deviceinfo_flash_offset_second=0x00008000
 deviceinfo_flash_offset_tags="$TEST_TAGS_OFFSET"
 deviceinfo_bootimg_custom_args="$TEST_CUSTOM_ARGS"
 deviceinfo_dtb="$TEST_DTBS"
+append_or_copy_dtb
 create_bootimg
 '''
 
@@ -74,14 +79,24 @@ class VendorBootTest(unittest.TestCase):
     def assert_bundle(self, version, names, expected):
         result = self.build(version, names)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        data = (self.root / "vendor_boot.img").read_bytes()
-        self.assertEqual(data[:8], b"VNDRBOOT")
-        actual_version, page = struct.unpack_from("<II", data, 8)
-        self.assertEqual(actual_version, version)
-        ramdisk_size = struct.unpack_from("<I", data, 24)[0]
-        header_size, dtb_size = struct.unpack_from("<II", data, 2096)
-        align = lambda size: (size + page - 1) // page * page
-        start = align(header_size) + align(ramdisk_size)
+        if version >= 3:
+            data = (self.root / "vendor_boot.img").read_bytes()
+            self.assertEqual(data[:8], b"VNDRBOOT")
+            actual_version, page = struct.unpack_from("<II", data, 8)
+            self.assertEqual(actual_version, version)
+            ramdisk_size = struct.unpack_from("<I", data, 24)[0]
+            header_size, dtb_size = struct.unpack_from("<II", data, 2096)
+            align = lambda size: (size + page - 1) // page * page
+            start = align(header_size) + align(ramdisk_size)
+        else:
+            data = (self.root / 'boot.img').read_bytes()
+            page = struct.unpack_from('<I', data, 36)[0]
+            align = lambda size: (size + page - 1) // page * page
+            kernel_size = struct.unpack_from('<I', data, 8)[0]
+            ramdisk_size = struct.unpack_from('<I', data, 16)[0]
+            start = align(1660) + align(kernel_size) + align(ramdisk_size)
+            dtb_size = struct.unpack_from('<I', data, 1648)[0]
+            self.assertFalse((self.root / 'vendor_boot.img').exists())
         position, padded = 0, bytearray()
         while position < len(expected):
             size = struct.unpack_from('>I', expected, position + 4)[0]
@@ -104,6 +119,9 @@ class VendorBootTest(unittest.TestCase):
 
     def test_header3_contains_both_dtbs_in_order(self):
         self.assert_bundle(3, "spes spesn", b"".join(self.blobs))
+
+    def test_header2_contains_both_dtbs_in_order(self):
+        self.assert_bundle(2, 'spes spesn', b''.join(self.blobs))
 
     def test_header4_contains_both_dtbs_in_order(self):
         self.assert_bundle(4, "spes spesn", b"".join(self.blobs))
