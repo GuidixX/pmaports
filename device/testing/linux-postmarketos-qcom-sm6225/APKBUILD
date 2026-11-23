@@ -1,7 +1,7 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
 pkgver=7.4.0_rc3
-pkgrel=4
+pkgrel=5
 pkgdesc="Nura mainline kernel for Xiaomi spes and spesn"
 arch="aarch64"
 url="https://github.com/GuidixX/kernel_xiaomi_sm6225-mainline"

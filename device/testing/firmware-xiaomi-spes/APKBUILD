@@ -1,7 +1,7 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=firmware-xiaomi-spes
 pkgver=1
-pkgrel=2
+pkgrel=3
 pkgdesc="Firmware for Xiaomi spes and spesn"
 url="https://github.com/GuidixX/firmware-xiaomi-spes"
 arch="aarch64"
@@ -26,6 +26,7 @@ package() {
 		install -Dm644 qcom/sm6225/XIAOMI/$_variant/* \
 			-t "$pkgdir/usr/lib/firmware/qcom/sm6225/XIAOMI/$_variant/"
 	done
+	install -Dm644 aw87xxx_acf.bin "$pkgdir/usr/lib/firmware/aw87xxx_acf.bin"
 	install -Dm644 "$srcdir/30-initramfs-firmware.files" \
 		"$pkgdir/usr/share/mkinitfs/files/30-initramfs-firmware.files"
 	install -Dm644 "$srcdir/31-initramfs-extra-firmware.files" \
@@ -34,5 +35,5 @@ package() {
 
 sha512sums="
 77224d34f2521afb758de18d63f083cca9031d9a39edb4d2be42a01e29c85dbb1c58294d46f381cb42f8de0455af1bc85cce033beb3e758cad0562b5ab5be0be  30-initramfs-firmware.files
-54c65480606a0642117e948fd132c525d1a6d9d046ce59ccc03aa0e8b3ed01a6ca67691aa6a288fa76f75fe50a08dd0646dc7c71916be3839cc9d1e5a193d4bb  31-initramfs-extra-firmware.files
+9625f205ab690964af6c10d44e98f9ff904a72d3d8b56dba7825e00cf050ef36c32f38b805f204761de24a82ae655b32c94cca4fde34072dda8842a417e1902a  31-initramfs-extra-firmware.files
 "

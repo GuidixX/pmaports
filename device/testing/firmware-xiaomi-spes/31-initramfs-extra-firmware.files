@@ -96,3 +96,4 @@
 /lib/firmware/ath10k/WCN3990/hw1.0/firmware-5.bin.zst
 /lib/firmware/qcom/a630_gmu.bin
 /lib/firmware/qcom/a630_sqe.fw
+/usr/lib/firmware/aw87xxx_acf.bin
