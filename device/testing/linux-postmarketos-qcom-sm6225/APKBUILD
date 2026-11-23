@@ -1,7 +1,7 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
 pkgver=7.4.0_rc3
-pkgrel=3
+pkgrel=4
 pkgdesc="Nura mainline kernel for Xiaomi spes and spesn"
 arch="aarch64"
 url="https://github.com/GuidixX/kernel_xiaomi_sm6225-mainline"
@@ -11,7 +11,9 @@ makedepends="bc bison clang diffutils elfutils-dev findutils flex kmod linux-hea
 _carch="arm64"
 _flavor="postmarketos-qcom-sm6225"
 _config="config-$_flavor.$arch"
-source="$_config"
+source="$_config
+	embed-firmware.py
+	"
 builddir="$srcdir/linux"
 
 prepare() {
@@ -22,6 +24,7 @@ prepare() {
 	default_prepare
 	cp "$srcdir/$_config" "$builddir/.config"
 	make ARCH="$_carch" LLVM=1 olddefconfig
+	python3 "$srcdir/embed-firmware.py" prepare "$builddir"
 }
 
 build() {
@@ -30,6 +33,12 @@ build() {
 		KBUILD_BUILD_VERSION="$((pkgrel + 1))-$_flavor" \
 		Image.gz modules \
 		qcom/sm6225-xiaomi-spes-sm5602.dtb qcom/sm6225-xiaomi-spesn.dtb
+	python3 "$srcdir/embed-firmware.py" verify "$builddir"
+	# Keep space for the v3 header in the 128 MiB boot partition.
+	[ "$(stat -c %s arch/arm64/boot/Image.gz)" -le 134213632 ] || {
+		echo "Kernel with embedded firmware exceeds the boot partition." >&2
+		return 1
+	}
 }
 
 package() {
@@ -43,9 +52,11 @@ package() {
 	rm -f "$pkgdir"/usr/lib/modules/*/build "$pkgdir"/usr/lib/modules/*/source
 	install -Dm644 include/config/kernel.release \
 		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	install -Dm644 nura-firmware/manifest.json \
+		"$pkgdir/usr/share/kernel/$_flavor/firmware-manifest.json"
 }
 
-# prepare.py adds the checksum of the generated, full .config.
 sha512sums="
 6cdd345e78d2121ea078e379a18497cac653ee9d9f93f1faa39813276fd3a51a75fa4528180f42a897da00511092e168d129813f8222693aabe7723411fbee02  config-postmarketos-qcom-sm6225.aarch64
+8cc4c71f8985720f7017d5a27dbfee75cc82f3f24cf18e9e9b458ea0797585b6cb3237735b917a4c8e06de4b309f9bc01ba77f291e90f77fdb3ea3587daa4cb5  embed-firmware.py
 "
