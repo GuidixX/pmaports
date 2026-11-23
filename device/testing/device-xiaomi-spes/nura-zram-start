@@ -1,0 +1,25 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+
+set -eu
+
+if swapon --show=NAME --noheadings | grep -Fxq /dev/zram0; then
+	echo "Nura zram swap is already active"
+	exit 0
+fi
+
+if [ ! -b /dev/zram0 ]; then
+	modprobe -q zram num_devices=1
+fi
+
+zramctl /dev/zram0 --algorithm zstd --size 6G
+mkswap /dev/zram0 >/dev/null
+swapon /dev/zram0 --priority 300
+
+# Retain the reclaim settings used by postmarketos-zram.
+sysctl -q -w vm.page-cluster=0 vm.swappiness=180
+if [ "$(cat /proc/sys/vm/min_free_kbytes)" -lt 100000 ]; then
+	sysctl -q -w vm.min_free_kbytes=100000
+fi
+
+echo "Nura zram swap activated: 6 GiB, zstd"
