@@ -1,7 +1,7 @@
 maintainer="Guidix <guidixm@gmail.com>"
 pkgname=linux-postmarketos-qcom-sm6225
 pkgver=7.4.0_rc3
-pkgrel=5
+pkgrel=6
 pkgdesc="Nura mainline kernel for Xiaomi spes and spesn"
 arch="aarch64"
 url="https://github.com/GuidixX/kernel_xiaomi_sm6225-mainline"
@@ -57,6 +57,6 @@ package() {
 }
 
 sha512sums="
-6cdd345e78d2121ea078e379a18497cac653ee9d9f93f1faa39813276fd3a51a75fa4528180f42a897da00511092e168d129813f8222693aabe7723411fbee02  config-postmarketos-qcom-sm6225.aarch64
+4ed321139081534a1680107bc242ee489bb492d1e8ce50d3e0cb27eb066d72a3b3b36fda2c75f20e16a40016742057b13ea4399b1938b0a9114af0cc1007d90c  config-postmarketos-qcom-sm6225.aarch64
 8cc4c71f8985720f7017d5a27dbfee75cc82f3f24cf18e9e9b458ea0797585b6cb3237735b917a4c8e06de4b309f9bc01ba77f291e90f77fdb3ea3587daa4cb5  embed-firmware.py
 "
